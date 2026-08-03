@@ -318,10 +318,8 @@ select:focus,.btn:focus-visible{outline:2px solid var(--brass);outline-offset:2p
               If it can't load, a labeled placeholder shows instead.
      hp     – starting life for the counters (the card's Health)
      colors – how many token colors this monster can field (its
-              cap). Counters fill from the top of COLORS (red first).
+              cap). Counters fill from the top of COLORS (red first)OR ["Teal"] for special cards.
 
-   Two samples below, both Mundane, so you can test right away.
-   Replace them with your real cards.
    ================================================================ */
 
 const COLORS = [
@@ -405,7 +403,11 @@ const MONSTERS = [
 	{ name:"UM54S", level:"Hidden", img:"UM54SubjugatedOblationHidden.png", hp:200,  colors:1 },
 	
 //Espers
-	{ name:"Espers", level:"Espers", img:"Esper.png", hp:99,  colors:1 },
+	{ name:"Celestial Giga", level:"Espers", img:"CelestialGigaAny.png", hp:99,  colors:1 },
+	{ name:"Spirit Blade", level:"Espers", img:"SpiritBladeAny.png", hp:99,  colors:1 },
+	{ name:"Twin Sivani - Ava", level:"Espers", img:"TwinSivani-AvaAny.png", hp:99,  colors:1 },
+	{ name:"Twin Sivani - Hope", level:"Espers", img:"TwinSivani-HopeAny.png", hp:99,  colors:["Teal"] },
+	{ name:"Viscera Arimid", level:"Espers", img:"VisceraArimidAny.png", hp:99,  colors:1 },
 	 
 ];
 
