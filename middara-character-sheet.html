@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Middara Character Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#141019; --bg-2:#1c1622; --panel:#231b2b; --panel-2:#2b2130;
+  --edge:#3a2f42; --ink:#f3ecdf; --ink-dim:#a79bb0; --ink-faint:#6f6377;
+  --brass:#cba24b; --brass-dim:#8f7534;
+  --red:#d84a4a; --shadow:0 5px 14px rgba(0,0,0,.4); --r:11px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;}
+body{
+  background:radial-gradient(1000px 600px at 50% -10%, #2a1f36 0%, rgba(42,31,54,0) 60%),var(--bg);
+  color:var(--ink);font-family:"Oswald","Segoe UI",system-ui,-apple-system,sans-serif;
+  -webkit-font-smoothing:antialiased;min-height:100vh;
+}
+.wrap{max-width:600px;margin:0 auto;padding:0 8px 20px;}
+.topbar{position:sticky;top:0;z-index:20;display:flex;gap:6px;align-items:center;flex-wrap:wrap;
+  padding:6px 2px;background:linear-gradient(180deg,var(--bg) 72%,rgba(20,16,25,0));}
+.topbar h1{font-family:"Cinzel",serif;font-size:13px;letter-spacing:.06em;margin:0 auto 0 2px;color:var(--brass);}
+select,.btn{font-family:inherit;font-size:13px;background:var(--panel-2);color:var(--ink);
+  border:1px solid var(--edge);border-radius:8px;padding:5px 9px;min-height:32px;cursor:pointer;}
+.btn:active{transform:translateY(1px);}
+.btn.primary{background:linear-gradient(180deg,#d9b358,#b98f30);color:#231a08;border-color:var(--brass);font-weight:600;}
+.btn.ghost{background:transparent;color:var(--ink-dim);}
+.btn.danger{color:#ff9a9a;border-color:rgba(226,59,59,.4);background:transparent;}
+.btn[disabled]{opacity:.4;cursor:not-allowed;}
+.name-in{width:100%;font-family:"Cinzel",serif;font-weight:700;font-size:clamp(18px,4.6vw,24px);
+  letter-spacing:.02em;color:var(--ink);background:transparent;border:none;border-bottom:2px solid var(--edge);
+  padding:1px 2px;margin:1px 0 0;}
+.name-in:focus{outline:none;border-bottom-color:var(--brass);}
+.card{background:linear-gradient(180deg,var(--panel),var(--bg-2));border:1px solid var(--edge);
+  border-radius:var(--r);box-shadow:var(--shadow);padding:7px 9px;margin-top:6px;}
+.card > h2{font-family:"Cinzel",serif;font-weight:500;font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--brass);margin:0 0 5px;}
+.counters-2{display:flex;gap:8px;}
+.ctr{flex:1;min-width:0;text-align:center;}
+.ctr-row{display:flex;align-items:center;justify-content:center;gap:6px;}
+.h-label{font-family:"Cinzel",serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--red);display:block;margin-bottom:5px;}
+.xp .h-label{color:var(--brass);}
+.h-step{width:36px;height:36px;border-radius:10px;border:1px solid var(--edge);background:var(--panel-2);
+  color:var(--ink);font-size:20px;font-weight:600;line-height:1;cursor:pointer;}
+.h-step:active{transform:translateY(1px);}
+.h-step.minus{border-color:rgba(216,74,74,.5);}
+.h-step.plus{border-color:rgba(120,200,120,.4);}
+.h-nums{display:flex;align-items:baseline;gap:4px;min-width:0;}
+.h-cur{font-weight:700;font-size:clamp(22px,6vw,30px);line-height:.9;color:var(--ink);cursor:text;font-variant-numeric:tabular-nums;}
+.h-sep{font-size:16px;color:var(--ink-faint);}
+.h-max{font-size:15px;color:var(--ink-dim);cursor:text;font-variant-numeric:tabular-nums;}
+.grid{display:grid;gap:6px;}
+.attrs{grid-template-columns:repeat(auto-fit,minmax(70px,1fr));}
+.vitals{grid-template-columns:repeat(4,1fr);}
+.stat{background:var(--panel-2);border:1px solid var(--edge);border-radius:9px;padding:6px 4px;text-align:center;}
+.ring{width:40px;height:40px;border-radius:50%;margin:0 auto 3px;display:flex;align-items:center;justify-content:center;
+  border:2px solid var(--rc,#888);box-shadow:0 0 8px -4px var(--rc,#888);background:#181320;}
+.ring .v{font-weight:700;font-size:17px;color:var(--ink);cursor:text;font-variant-numeric:tabular-nums;}
+.stat .lbl{font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);}
+.vital .v{font-weight:700;font-size:21px;color:var(--ink);cursor:text;font-variant-numeric:tabular-nums;display:block;margin-bottom:1px;}
+.vital{border-color:rgba(216,74,74,.35);}
+.vital .lbl{color:var(--red);}
+.num-edit{width:2.3em;font-family:inherit;font-weight:700;font-size:17px;text-align:center;
+  background:#0e0b13;color:var(--ink);border:2px solid var(--brass);border-radius:6px;padding:0 2px;font-variant-numeric:tabular-nums;}
+.h-nums .num-edit{font-size:24px;width:2.3em;}
+.pool{margin-bottom:6px;padding:5px 6px;border:1px solid transparent;border-radius:9px;cursor:pointer;}
+.pool.sel{border-color:var(--brass-dim);background:rgba(203,162,75,.06);}
+.pool-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim);font-weight:600;margin-bottom:4px;}
+.pool.sel .pool-label{color:var(--brass);}
+.dice{display:flex;flex-wrap:wrap;gap:4px;min-height:28px;align-items:center;}
+.empty-dice{font-size:11px;color:var(--ink-faint);}
+.die{width:28px;height:28px;border-radius:7px;border:2px solid var(--db);background:var(--dc);cursor:pointer;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.22),0 1px 2px rgba(0,0,0,.5);}
+.die:hover{filter:brightness(1.08);}
+.addbar{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin-top:6px;padding-top:7px;border-top:1px solid var(--edge);}
+.addbar .lead{font-size:10px;color:var(--ink-dim);letter-spacing:.06em;text-transform:uppercase;margin-right:2px;}
+.addbar .lead b{color:var(--brass);}
+.palette{display:flex;flex-wrap:wrap;gap:5px;}
+.swatch{width:24px;height:24px;border-radius:6px;border:2px solid var(--db);background:var(--dc);cursor:pointer;box-shadow:inset 0 2px 0 rgba(255,255,255,.18);}
+.swatch:hover{filter:brightness(1.12);}
+.tf{display:block;margin-bottom:6px;}
+.tf:last-child{margin-bottom:0;}
+.tf .lbl{display:block;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:2px;}
+.tf textarea{width:100%;font-family:inherit;font-size:13px;color:var(--ink);background:#181320;
+  border:1px solid var(--edge);border-radius:8px;padding:5px 8px;resize:vertical;min-height:30px;line-height:1.3;}
+.tf textarea:focus{outline:none;border-color:var(--brass);}
+.tf.half{display:inline-block;width:calc(50% - 5px);vertical-align:top;}
+.tf.half:nth-child(odd){margin-right:8px;}
+#empty{text-align:center;padding:48px 10px;color:var(--ink-dim);}
+#empty p{font-size:15px;margin:0 0 14px;}
+.scrim{position:fixed;inset:0;background:rgba(8,6,12,.7);display:none;align-items:center;justify-content:center;z-index:100;padding:20px;}
+.scrim.show{display:flex;}
+.dialog{background:var(--panel);border:1px solid var(--brass-dim);border-radius:var(--r);padding:20px;max-width:360px;width:100%;box-shadow:var(--shadow);}
+.dialog h3{font-family:"Cinzel",serif;margin:0 0 10px;font-size:18px;}
+.dialog p{margin:0 0 14px;color:var(--ink-dim);font-size:14px;}
+.dialog .row{display:flex;gap:10px;justify-content:flex-end;}
+.dlg-in{width:100%;font-family:inherit;font-size:16px;color:var(--ink);background:#0e0b13;border:1px solid var(--edge);border-radius:9px;padding:9px 11px;margin-bottom:6px;}
+.dlg-in:focus{outline:none;border-color:var(--brass);}
+.err{color:#ff9a9a;font-size:13px;margin:0 0 12px;min-height:1.1em;}
+.btn.dgo{background:linear-gradient(180deg,#c9433f,#a3302d);border-color:#c9433f;color:#fff;font-weight:600;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <h1>Character Sheet</h1>
+    <select id="pick" title="Switch character"></select>
+    <button class="btn primary" id="new">+ New</button>
+    <button class="btn danger" id="del" title="Delete character">Delete</button>
+  </div>
+
+  <div id="empty">
+    <p>No characters yet.</p>
+    <button class="btn primary" id="emptyNew">Create your first character</button>
+  </div>
+
+  <div id="sheet">
+    <input class="name-in" id="name" placeholder="Character name" autocomplete="off">
+
+    <div class="card" id="healthCard"></div>
+
+    <div class="card">
+      <h2>Dice Pools</h2>
+      <div id="pools"></div>
+      <div class="addbar">
+        <span class="lead">Add to <b id="selName">Combat</b></span>
+        <div class="palette" id="palette"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Vitals</h2>
+      <div class="grid vitals" id="vitals"></div>
+    </div>
+
+    <div class="card">
+      <h2>Details</h2>
+      <div id="texts"></div>
+    </div>
+
+    <div class="card">
+      <h2>Attributes</h2>
+      <div class="grid attrs" id="attrs"></div>
+    </div>
+  </div>
+</div>
+
+<div class="scrim" id="scrim">
+  <div class="dialog">
+    <h3>Delete character?</h3>
+    <p id="dBody"></p>
+    <div class="row">
+      <button class="btn ghost" id="dNo">Cancel</button>
+      <button class="btn dgo" id="dYes">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="scrim" id="nameScrim">
+  <div class="dialog">
+    <h3>Name your character</h3>
+    <input id="nameNew" class="dlg-in" placeholder="Character name" autocomplete="off">
+    <p class="err" id="nameErr"></p>
+    <div class="row">
+      <button class="btn ghost" id="nameCancel">Cancel</button>
+      <button class="btn primary" id="nameCreate">Create</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DICE = [
+  {key:"black", name:"Black",  hex:"#23232a", bd:"#454552"},
+  {key:"purple",name:"Purple", hex:"#9b5de5", bd:"#b98bef"},
+  {key:"white", name:"White",  hex:"#eceff1", bd:"#c3c8cc"},
+  {key:"orange",name:"Orange", hex:"#f4923b", bd:"#f7b273"},
+  {key:"teal",  name:"Teal",   hex:"#2dd4bf", bd:"#6fe4d5"},
+  {key:"red",   name:"Red",    hex:"#e23b3b", bd:"#ef7373"},
+  {key:"lime",  name:"Lime",   hex:"#a3e635", bd:"#c1ee74"},
+  {key:"grey",  name:"Grey",   hex:"#9aa0a6", bd:"#bcc0c5"},
+  {key:"blue",  name:"Blue",   hex:"#4a7bef", bd:"#83a2f4"},
+];
+const DMAP = Object.fromEntries(DICE.map(d=>[d.key,d]));
+const ATTRS = [
+  {key:"presence",  name:"Presence",  hex:"#b455c9"},
+  {key:"lore",      name:"Lore",      hex:"#38a0d8"},
+  {key:"agility",   name:"Agility",   hex:"#5cb85c"},
+  {key:"perception",name:"Perception",hex:"#f0a63b"},
+  {key:"strength",  name:"Strength",  hex:"#d84a4a"},
+];
+const VITALS = [
+  {name:"Health",   path:"health.max"},
+  {name:"Defense",  path:"vitals.def"},
+  {name:"Movement", path:"vitals.mov"},
+  {name:"Armor",    path:"vitals.arm"},
+];
+const POOLS  = [ {key:"combat",name:"Combat"}, {key:"conviction",name:"Conviction"}, {key:"casting",name:"Casting"} ];
+const TEXTS  = [
+  {key:"status",name:"Status"},
+  {key:"reminder",name:"Reminder"},
+  {key:"bonus",name:"Bonus"},
+  {key:"dodge",name:"Dodge",half:true},
+  {key:"counter",name:"Counter",half:true},
+  {key:"defense",name:"Defense"},
+];
+
+const STORE = "middara.characters.v1";
+let state = { chars:{}, order:[], active:null };
+let selPool = "combat";
+const $ = s => document.querySelector(s);
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : "c"+Date.now()+Math.floor(Math.random()*1e4));
+
+/* base stats for a brand-new character */
+function newChar(name){
+  return {
+    id:uid(), name:name,
+    health:{cur:12,max:12},
+    xp:{cur:0,max:0},
+    vitals:{def:7,mov:6,arm:0},
+    attrs:{presence:2,lore:3,agility:1,perception:2,strength:1},
+    dice:{combat:["purple","purple"], conviction:["purple","purple"], casting:["purple"]},
+    text:{status:"",reminder:"",bonus:"",dodge:"",counter:"",defense:""},
+  };
+}
+/* fill any missing fields on older saved characters */
+function normalize(c){
+  c.health = Object.assign({cur:12,max:12}, c.health||{});
+  c.xp     = Object.assign({cur:0,max:0}, c.xp||{});
+  c.vitals = Object.assign({def:0,mov:0,arm:0}, c.vitals||{});
+  c.attrs  = Object.assign({presence:0,lore:0,agility:0,perception:0,strength:0}, c.attrs||{});
+  c.dice   = c.dice||{}; ["combat","conviction","casting"].forEach(k=>c.dice[k]=c.dice[k]||[]);
+  c.text   = Object.assign({status:"",reminder:"",bonus:"",dodge:"",counter:"",defense:""}, c.text||{});
+  return c;
+}
+function active(){ return state.chars[state.active]; }
+function getPath(o,p){ return p.split(".").reduce((a,k)=>a&&a[k],o); }
+function setPath(o,p,v){ const ks=p.split("."); const last=ks.pop(); let t=o; ks.forEach(k=>t=t[k]); t[last]=v; }
+function save(){ localStorage.setItem(STORE, JSON.stringify(state)); }
+function load(){ try{ const s=JSON.parse(localStorage.getItem(STORE)); if(s&&s.order) return s; }catch{} return null; }
+function esc(s){ return String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m])); }
+function autogrow(t){ t.style.height="auto"; t.style.height=(t.scrollHeight+2)+"px"; }
+
+function counterRow(label, track, c){
+  return `<div class="ctr ${track}">
+    <span class="h-label">${label}</span>
+    <div class="ctr-row">
+      <button class="h-step minus" data-hstep="-1" data-track="${track}">&ndash;</button>
+      <span class="h-nums">
+        <span class="h-cur" data-num="${track}.cur">${c[track].cur}</span>
+        <span class="h-sep">/</span>
+        <span class="h-max" data-num="${track}.max">${c[track].max}</span>
+      </span>
+      <button class="h-step plus" data-hstep="1" data-track="${track}">+</button>
+    </div>
+  </div>`;
+}
+
+function render(){
+  $("#pick").innerHTML = state.order.map(id=>{
+    const c=state.chars[id];
+    return `<option value="${id}" ${id===state.active?"selected":""}>${esc(c.name||"Unnamed")}</option>`;
+  }).join("");
+  $("#del").disabled = state.order.length<=1;
+
+  if(!state.order.length || !active()){
+    $("#empty").style.display="block"; $("#sheet").style.display="none";
+    return;
+  }
+  $("#empty").style.display="none"; $("#sheet").style.display="block";
+
+  const c = active();
+  $("#name").value = c.name;
+
+  // Health + XP counters
+  $("#healthCard").innerHTML = `<div class="counters-2">${counterRow("Health","health",c)}${counterRow("XP","xp",c)}</div>`;
+
+  // dice pools + one shared palette
+  $("#pools").innerHTML = POOLS.map(p=>{
+    const dice=c.dice[p.key]||[];
+    const els = dice.length
+      ? dice.map((k,i)=>{ const d=DMAP[k]||DMAP.grey;
+          return `<button class="die" style="--dc:${d.hex};--db:${d.bd}" data-pool="${p.key}" data-remove="${i}" title="Remove ${d.name}"></button>`;}).join("")
+      : `<span class="empty-dice">&mdash;</span>`;
+    return `<div class="pool ${p.key===selPool?"sel":""}" data-selpool="${p.key}">
+      <div class="pool-label">${p.name}</div>
+      <div class="dice">${els}</div>
+    </div>`;
+  }).join("");
+  $("#selName").textContent = (POOLS.find(p=>p.key===selPool)||POOLS[0]).name;
+  $("#palette").innerHTML = DICE.map(d=>`<button class="swatch" style="--dc:${d.hex};--db:${d.bd}" data-add="${d.key}" title="Add ${d.name}"></button>`).join("");
+
+  // vitals (incl. Health max)
+  $("#vitals").innerHTML = VITALS.map(v=>`
+    <div class="stat vital">
+      <span class="v" data-num="${v.path}">${getPath(c,v.path)}</span>
+      <div class="lbl">${v.name}</div>
+    </div>`).join("");
+
+  // details
+  $("#texts").innerHTML = TEXTS.map(t=>`
+    <label class="tf ${t.half?"half":""}">
+      <span class="lbl">${t.name}</span>
+      <textarea data-text="${t.key}" rows="1" placeholder="&mdash;">${esc(c.text[t.key])}</textarea>
+    </label>`).join("");
+  document.querySelectorAll("#texts textarea").forEach(autogrow);
+
+  // attributes + XP Max at the end
+  $("#attrs").innerHTML = ATTRS.map(a=>`
+    <div class="stat">
+      <div class="ring" style="--rc:${a.hex}"><span class="v" data-num="attrs.${a.key}">${c.attrs[a.key]}</span></div>
+      <div class="lbl">${a.name}</div>
+    </div>`).join("") + `
+    <div class="stat">
+      <div class="ring" style="--rc:var(--brass)"><span class="v" data-num="xp.max">${c.xp.max}</span></div>
+      <div class="lbl">XP Max</div>
+    </div>`;
+}
+
+/* number editing */
+document.addEventListener("click", e=>{
+  const num = e.target.closest("[data-num]");
+  if(num && !num.querySelector("input")){ editNum(num, num.dataset.num); }
+});
+function editNum(el, path){
+  const cur = getPath(active(), path);
+  const inp = document.createElement("input");
+  inp.type="number"; inp.className="num-edit"; inp.value=cur; inp.inputMode="numeric";
+  el.textContent=""; el.appendChild(inp); inp.focus(); inp.select();
+  const commit = ()=>{
+    let v=Math.floor(Number(inp.value)); if(!Number.isFinite(v)) v=cur;
+    if(v<0) v=0;
+    if(path==="health.max" && v<1) v=1;
+    setPath(active(), path, v);
+    if(path==="health.max" && active().health.cur>v) active().health.cur=v;
+    if(path==="xp.max" && active().xp.cur>v) active().xp.cur=v;
+    save(); render();
+  };
+  inp.addEventListener("blur", commit);
+  inp.addEventListener("keydown", ev=>{
+    if(ev.key==="Enter") inp.blur();
+    if(ev.key==="Escape"){ inp.removeEventListener("blur",commit); render(); }
+  });
+}
+
+/* health / xp steps */
+$("#healthCard").addEventListener("click", e=>{
+  const b=e.target.closest("[data-hstep]"); if(!b) return;
+  const c=active(); const tr=b.dataset.track;
+  c[tr].cur=Math.max(0, c[tr].cur + (+b.dataset.hstep));
+  save(); render();
+});
+
+/* dice */
+$("#pools").addEventListener("click", e=>{
+  const rem=e.target.closest("[data-remove]");
+  if(rem){ active().dice[rem.dataset.pool].splice(+rem.dataset.remove,1); save(); render(); return; }
+  const pool=e.target.closest("[data-selpool]");
+  if(pool){ selPool=pool.dataset.selpool; render(); }
+});
+$("#palette").addEventListener("click", e=>{
+  const add=e.target.closest("[data-add]"); if(!add) return;
+  active().dice[selPool].push(add.dataset.add); save(); render();
+});
+
+/* text fields */
+$("#texts").addEventListener("input", e=>{
+  const ta=e.target.closest("[data-text]"); if(!ta) return;
+  active().text[ta.dataset.text]=ta.value; autogrow(ta); save();
+});
+
+/* name (rename current) */
+$("#name").addEventListener("input", e=>{
+  active().name=e.target.value; save();
+  const opt=$("#pick").querySelector(`option[value="${state.active}"]`);
+  if(opt) opt.textContent = e.target.value || "Unnamed";
+});
+
+/* switch */
+$("#pick").addEventListener("change", e=>{ state.active=e.target.value; selPool="combat"; save(); render(); });
+
+/* new character -> name dialog (required, unique) */
+const nameScrim=$("#nameScrim");
+function openNameDialog(){ $("#nameNew").value=""; $("#nameErr").textContent=""; nameScrim.classList.add("show"); setTimeout(()=>$("#nameNew").focus(),30); }
+$("#new").addEventListener("click", openNameDialog);
+$("#emptyNew").addEventListener("click", openNameDialog);
+$("#nameCancel").addEventListener("click", ()=>nameScrim.classList.remove("show"));
+nameScrim.addEventListener("click", e=>{ if(e.target===nameScrim) nameScrim.classList.remove("show"); });
+$("#nameNew").addEventListener("keydown", e=>{ if(e.key==="Enter") createFromDialog(); if(e.key==="Escape") nameScrim.classList.remove("show"); });
+$("#nameCreate").addEventListener("click", createFromDialog);
+function createFromDialog(){
+  const name=$("#nameNew").value.trim();
+  if(!name){ $("#nameErr").textContent="Enter a name."; return; }
+  const dup=state.order.some(id=>(state.chars[id].name||"").trim().toLowerCase()===name.toLowerCase());
+  if(dup){ $("#nameErr").textContent="A character with that name already exists."; return; }
+  const c=newChar(name); state.chars[c.id]=c; state.order.push(c.id); state.active=c.id; selPool="combat";
+  nameScrim.classList.remove("show"); save(); render();
+}
+
+/* delete */
+const scrim=$("#scrim");
+$("#del").addEventListener("click", ()=>{
+  if(state.order.length<=1) return;
+  $("#dBody").textContent = `"${active().name||"This character"}" will be permanently removed from this device.`;
+  scrim.classList.add("show");
+});
+$("#dNo").addEventListener("click", ()=>scrim.classList.remove("show"));
+scrim.addEventListener("click", e=>{ if(e.target===scrim) scrim.classList.remove("show"); });
+$("#dYes").addEventListener("click", ()=>{
+  const id=state.active;
+  delete state.chars[id]; state.order=state.order.filter(x=>x!==id);
+  state.active=state.order[0]||null; selPool="combat";
+  scrim.classList.remove("show"); save(); render();
+});
+
+/* boot */
+const loaded = load();
+if(loaded && loaded.order){
+  state=loaded;
+  state.order.forEach(id=>normalize(state.chars[id]));
+  if(!state.chars[state.active]) state.active=state.order[0]||null;
+  save();
+} // else: no characters yet -> empty state prompts to create the first
+render();
+</script>
+</body>
+</html>
