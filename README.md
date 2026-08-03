@@ -1,0 +1,1 @@
+This is just for my home campaign when middara.ttcompanion.app went down. I will update as I feel like it for our uses. If you can use it, awesome! The organization is my own mind chaos, so not responsible if it doesn't make sense :)
