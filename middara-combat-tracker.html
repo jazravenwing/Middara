@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Middara Combat Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DATA ENTRY LIVES IN THE <script> AT THE BOTTOM OF THIS FILE.
+   You do not need to touch this style block.
+   ============================================================ */
+
+:root{
+  --bg:#141019;
+  --bg-2:#1c1622;
+  --panel:#231b2b;
+  --panel-2:#2b2130;
+  --edge:#3a2f42;
+  --ink:#f3ecdf;
+  --ink-dim:#a79bb0;
+  --ink-faint:#6f6377;
+  --brass:#cba24b;
+  --brass-dim:#8f7534;
+  --dead:#5a5262;
+  --shadow:0 10px 30px rgba(0,0,0,.5);
+  --r:14px;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;height:100%;}
+body{
+  background:
+    radial-gradient(1200px 700px at 50% -10%, #2a1f36 0%, rgba(42,31,54,0) 60%),
+    radial-gradient(900px 900px at 100% 120%, #1e2630 0%, rgba(30,38,48,0) 55%),
+    var(--bg);
+  color:var(--ink);
+  font-family:"Oswald","Segoe UI",system-ui,-apple-system,sans-serif;
+  font-weight:400;
+  -webkit-font-smoothing:antialiased;
+  height:100vh;height:100dvh;overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ---------- Top bar ---------- */
+.topbar{
+  display:flex;flex-wrap:wrap;align-items:center;gap:12px;
+  padding:9px clamp(14px,3vw,32px);
+  background:linear-gradient(180deg,rgba(43,33,48,.9),rgba(28,22,34,.75));
+  border-bottom:1px solid var(--edge);
+  backdrop-filter:blur(6px);
+  position:sticky;top:0;z-index:40;
+}
+.brand{display:flex;flex-direction:column;line-height:1;margin-right:auto;}
+.brand h1{
+  font-family:"Cinzel",serif;font-weight:700;
+  font-size:clamp(18px,2.4vw,26px);letter-spacing:.06em;
+  margin:0;color:var(--ink);
+}
+.brand span{font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--brass);margin-top:4px;}
+
+.setup{display:flex;flex-wrap:wrap;align-items:center;gap:8px;}
+.setup label{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-faint);}
+select,.btn,.qty-wrap{
+  font-family:inherit;font-size:15px;
+  background:var(--panel-2);color:var(--ink);
+  border:1px solid var(--edge);border-radius:10px;
+  padding:7px 11px;min-height:38px;
+}
+select{max-width:44vw;}
+select:focus,.btn:focus-visible{outline:2px solid var(--brass);outline-offset:2px;}
+.btn{cursor:pointer;letter-spacing:.04em;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;transition:transform .08s ease,background .15s ease,border-color .15s ease;}
+.btn:active{transform:translateY(1px);}
+.btn.primary{background:linear-gradient(180deg,#d9b358,#b98f30);color:#231a08;border-color:var(--brass);font-weight:600;}
+.btn.primary:hover{background:linear-gradient(180deg,#e5c266,#c79b38);}
+.btn.ghost{background:transparent;color:var(--ink-dim);}
+.btn.ghost:hover{color:var(--ink);border-color:var(--brass-dim);}
+.btn[disabled]{opacity:.4;cursor:not-allowed;}
+
+/* ---------- Restore bar ---------- */
+.restore-bar{
+  display:none;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:12px clamp(14px,3vw,32px);
+  background:linear-gradient(180deg,#2f2438,#281e30);
+  border-bottom:1px solid var(--brass-dim);
+}
+.restore-bar.show{display:flex;}
+.restore-bar p{margin:0;color:var(--ink);font-size:15px;}
+.restore-bar p b{color:var(--brass);font-weight:600;}
+
+/* ---------- Tabs ---------- */
+.tabs{
+  display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;
+  padding:8px clamp(14px,3vw,32px) 0;
+  scrollbar-width:thin;
+}
+.tab{
+  flex:0 0 auto;cursor:pointer;position:relative;
+  background:var(--panel);border:1px solid var(--edge);border-bottom:none;
+  border-radius:12px 12px 0 0;padding:7px 34px 7px 12px;
+  min-height:44px;display:flex;flex-direction:column;justify-content:center;gap:3px;
+  transition:background .15s ease;
+}
+.tab:hover{background:var(--panel-2);}
+.tab.active{background:var(--bg-2);border-color:var(--brass-dim);box-shadow:0 -3px 0 var(--brass) inset;}
+.tab .tname{font-size:15px;font-weight:600;letter-spacing:.02em;line-height:1;white-space:nowrap;}
+.tab .tmeta{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-dim);letter-spacing:.1em;text-transform:uppercase;}
+.tab .dots{display:flex;gap:3px;}
+.tab .dot{width:8px;height:8px;border-radius:50%;background:var(--dead);}
+.tab .dot.on{box-shadow:0 0 5px var(--dc);background:var(--dc);}
+.tab .close{
+  position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:6px;
+  border:none;background:transparent;color:var(--ink-faint);cursor:pointer;font-size:16px;line-height:1;
+}
+.tab .close:hover{background:rgba(226,59,59,.18);color:#ff8f8f;}
+
+/* ---------- Stage ---------- */
+.stage{
+  flex:1;min-height:0;padding:clamp(10px,1.8vw,20px);
+  border-top:1px solid var(--edge);display:flex;overflow:hidden;
+}
+.group{display:flex;gap:clamp(18px,2.6vw,44px);align-items:stretch;justify-content:flex-start;width:100%;height:100%;min-height:0;}
+
+.card-holder{flex:0 1 auto;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.card-img{
+  height:100%;width:auto;max-width:100%;object-fit:contain;display:block;
+  filter:drop-shadow(0 12px 26px rgba(0,0,0,.55));
+}
+.art-fallback{
+  height:100%;aspect-ratio:143/120;max-width:100%;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;gap:12px;padding:24px;overflow:hidden;
+  border-radius:var(--r);border:1px solid var(--edge);box-shadow:var(--shadow);
+  background:
+    repeating-linear-gradient(135deg,rgba(203,162,75,.05) 0 12px,transparent 12px 24px),
+    linear-gradient(180deg,#241b2d,#191320);
+}
+.art-fallback .glyph{font-family:"Cinzel",serif;font-size:52px;color:var(--brass);opacity:.5;line-height:1;}
+.art-fallback .fname{font-family:"Cinzel",serif;font-size:22px;letter-spacing:.04em;color:var(--ink);}
+.art-fallback .flvl{font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-dim);}
+.art-fallback .fhint{font-size:12px;color:var(--ink-faint);max-width:80%;line-height:1.5;}
+.card-caption{margin-top:12px;text-align:center;}
+.card-caption .cn{font-family:"Cinzel",serif;font-size:clamp(20px,2.4vw,28px);letter-spacing:.03em;}
+.card-caption .cl{font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--brass);margin-top:3px;}
+
+/* ---------- Counters ---------- */
+.counters-wrap{flex:0 0 auto;width:clamp(210px,24vw,340px);min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:12px;}
+.group-bar{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding-bottom:14px;border-bottom:1px solid var(--edge);
+}
+.slot-count{font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim);}
+.slot-count b{color:var(--ink);font-weight:600;}
+
+.counters{
+  display:grid;gap:9px;
+  grid-template-columns:repeat(auto-fill,minmax(min(100%,148px),1fr));
+}
+.counter{
+  --tok:#888;--ink-tok:#fff;
+  container-type:inline-size;
+  position:relative;border-radius:16px;
+  background:linear-gradient(180deg,var(--panel-2),var(--panel));
+  border:2px solid var(--tok);
+  box-shadow:0 0 0 1px rgba(0,0,0,.4),0 0 22px -4px var(--tok),var(--shadow);
+  padding:9px 10px 11px;display:flex;flex-direction:column;gap:6px;
+  transition:opacity .2s ease,filter .2s ease,box-shadow .2s ease;
+}
+.counter .ctop{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.counter .cname{
+  font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tok);
+  display:flex;align-items:center;gap:5px;
+}
+.counter .cname::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--tok);box-shadow:0 0 6px var(--tok);}
+.counter .kill{
+  border:none;background:transparent;color:var(--ink-faint);cursor:pointer;
+  width:24px;height:24px;border-radius:7px;font-size:13px;line-height:1;
+}
+.counter .kill:hover{background:rgba(226,59,59,.2);color:#ff9a9a;}
+
+.hp{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:6px;}
+.hp .num{
+  font-weight:700;font-size:clamp(26px,21cqi,46px);line-height:.9;
+  font-variant-numeric:tabular-nums;color:var(--ink);cursor:text;text-align:center;
+  min-width:0;overflow:hidden;
+}
+.hp .num:hover{color:var(--brass);}
+.hp .edit{
+  width:100%;min-width:0;font-family:inherit;font-weight:700;font-size:clamp(24px,18cqi,42px);
+  text-align:center;background:#0e0b13;color:var(--ink);border:2px solid var(--brass);
+  border-radius:10px;padding:2px 4px;font-variant-numeric:tabular-nums;
+}
+.step{
+  width:clamp(34px,17cqi,46px);height:clamp(34px,17cqi,46px);border-radius:11px;
+  border:1px solid var(--edge);background:var(--panel-2);color:var(--ink);
+  font-size:clamp(18px,7cqi,26px);font-weight:600;line-height:1;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;user-select:none;
+  transition:background .12s ease,transform .06s ease;
+}
+.step:hover{background:var(--edge);}
+.step:active{transform:translateY(1px);}
+.step.minus{border-color:rgba(226,59,59,.5);}
+.step.plus{border-color:rgba(120,200,120,.4);}
+
+.counter.dead{
+  --tok:var(--dead);
+  filter:grayscale(1);opacity:.42;
+  box-shadow:0 0 0 1px rgba(0,0,0,.4),var(--shadow);
+}
+.counter.dead .cname{color:var(--dead);}
+.counter.dead .hp .num{color:var(--dead);}
+.counter.dead .step,.counter.dead .kill{visibility:hidden;pointer-events:none;}
+.counter.dead::after{
+  content:"DOWN";position:absolute;left:0;right:0;bottom:9px;text-align:center;
+  font-family:"Cinzel",serif;letter-spacing:.22em;font-size:10px;color:var(--ink-dim);
+}
+
+/* ---------- Empty state ---------- */
+.empty{
+  max-width:520px;margin:8vh auto;text-align:center;color:var(--ink-dim);
+}
+.empty .glyph{font-family:"Cinzel",serif;font-size:64px;color:var(--brass);opacity:.5;}
+.empty h2{font-family:"Cinzel",serif;font-weight:500;color:var(--ink);font-size:24px;letter-spacing:.03em;margin:14px 0 8px;}
+.empty p{font-size:15px;line-height:1.6;margin:0;}
+
+/* ---------- Confirm dialog ---------- */
+.scrim{
+  position:fixed;inset:0;background:rgba(8,6,12,.7);backdrop-filter:blur(3px);
+  display:none;align-items:center;justify-content:center;z-index:100;padding:20px;
+}
+.scrim.show{display:flex;}
+.dialog{
+  background:var(--panel);border:1px solid var(--brass-dim);border-radius:var(--r);
+  padding:24px;max-width:400px;box-shadow:var(--shadow);
+}
+.dialog h3{font-family:"Cinzel",serif;margin:0 0 8px;font-size:20px;letter-spacing:.02em;}
+.dialog p{margin:0 0 18px;color:var(--ink-dim);font-size:15px;line-height:1.5;}
+.dialog .row{display:flex;gap:10px;justify-content:flex-end;}
+.btn.danger{background:linear-gradient(180deg,#c9433f,#a3302d);border-color:#c9433f;color:#fff;font-weight:600;}
+
+@media (max-width:880px), (orientation:portrait){
+  .group{flex-direction:column;}
+  .counters-wrap{flex:0 0 auto;width:100%;overflow:visible;}
+  .counters{grid-template-columns:repeat(auto-fill,minmax(min(100%,128px),1fr));}
+}
+@media (max-width:640px){
+  .brand span{display:none;}
+  select{max-width:52vw;}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <h1>Combat Tracker</h1>
+    <span>Middara</span>
+  </div>
+  <div class="setup">
+    <label for="lvl">Loot Lvl</label>
+    <select id="lvl"></select>
+    <label for="pick">Monster</label>
+    <select id="pick"></select>
+    <label for="qty">Number</label>
+    <select id="qty"></select>
+    <button class="btn primary" id="add">Add to board</button>
+  </div>
+  <button class="btn ghost" id="full" title="Toggle fullscreen">⛶ Fullscreen</button>
+  <button class="btn ghost" id="clear">New encounter</button>
+</header>
+
+<div class="restore-bar" id="restoreBar">
+  <p>Found an unfinished encounter from <b id="restoreWhen">earlier</b>. Bring it back?</p>
+  <button class="btn primary" id="restoreYes">Restore</button>
+  <button class="btn ghost" id="restoreNo">Start fresh</button>
+</div>
+
+<div class="restore-bar" id="syncNote">
+  <p><b>This is open in another browser tab.</b> Two tabs would overwrite each other's saved fight, so keep it to one. You don't need extra browser tabs to run several monster types — add each one here and switch with the tabs across the top of this page.</p>
+  <button class="btn ghost" id="syncOk">Got it</button>
+</div>
+
+<nav class="tabs" id="tabs"></nav>
+<main class="stage" id="stage"></main>
+
+<div class="scrim" id="scrim">
+  <div class="dialog">
+    <h3 id="dlgTitle">Are you sure?</h3>
+    <p id="dlgBody"></p>
+    <div class="row">
+      <button class="btn ghost" id="dlgNo">Cancel</button>
+      <button class="btn danger" id="dlgYes">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================================================================
+   ▛▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  YOUR DATA  ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▜
+   Everything you edit is in this DATA block. Nothing below it
+   needs changing.
+
+   COLORS: the fixed token order. Slot 1 is red, 2 purple, etc.
+   Add the rest later by appending to this list, in order.
+
+   LOOT_LEVELS: the loot-level names, in the order they should
+   appear in the dropdown. Append more as you meet them.
+
+   MONSTERS: one entry per card. A monster with several loot levels
+   gets one entry per level (each has its own art and starting life).
+     name   – monster name; shown in the Monster dropdown
+     level  – a loot level from LOOT_LEVELS (Mundane, Common, ...);
+              shown in the Loot level dropdown and on the tab
+     img    – a bare filename if the image sits next to this file
+              (e.g. "CaveSickle1.png"), OR a full https:// URL.
+              If it can't load, a labeled placeholder shows instead.
+     hp     – starting life for the counters (the card's Health)
+     colors – how many token colors this monster can field (its
+              cap). Counters fill from the top of COLORS (red first).
+
+   Two samples below, both Mundane, so you can test right away.
+   Replace them with your real cards.
+   ================================================================ */
+
+const COLORS = [
+  { name:"Red",        hex:"#e23b3b" },
+  { name:"Purple",     hex:"#a06bef" },
+  { name:"Orange",     hex:"#f4923b" },
+  { name:"Teal",       hex:"#2dd4bf" },
+  { name:"Lime Green", hex:"#a3e635" },
+  { name:"Pink",       hex:"#f472b6" },
+];
+
+const LOOT_LEVELS = ["Mundane", "Common", "Uncommon", "Rare", "Hidden", "Espers"];
+const IMG_BASE = "https://raw.githubusercontent.com/jazravenwing/Middara/main/";
+
+const MONSTERS = [
+  // name              loot level     img (filename in your repo)     hp   colors (token cap)
+  //Mundane
+	{ name:"Animate", level:"Mundane", img:"AnimateMundane.png", hp:18,  colors:2 },
+    { name:"Cave Sickle", level:"Mundane", img:"CaveSickleMundane.png", hp:6,  colors:6 },
+	{ name:"Earth Loa",   level:"Mundane", img:"EarthLoaMundane.png",   hp:20, colors:2 },
+	{ name:"Gevaudan", level:"Mundane", img:"GevaudanMundane.png", hp:12,  colors:2 },
+	{ name:"Water Loa", level:"Mundane", img:"WaterLoaMundane.png", hp:12,  colors:2 },
+ 
+ //Common
+	{ name:"Blighted Brute", level:"Common", img:"BlightedBruteCommon.png", hp:80,  colors:1 },
+	{ name:"Blighted Guardian", level:"Common", img:"BlightedGuardianCommon.png", hp:60,  colors:1 },
+	{ name:"Cave Sickle", level:"Common", img:"CaveSickleCommon.png", hp:12,  colors:6 },
+	{ name:"Earth Loa", level:"Common", img:"EarthLoaCommon.png", hp:30,  colors:2 },
+	{ name:"Fragor", level:"Common", img:"FragorCommon.png", hp:12,  colors:3 },
+	{ name:"Gevaudan", level:"Common", img:"GevaudanCommon.png", hp:18,  colors:2 },
+	{ name:"Merk Hound", level:"Common", img:"MerkHoundCommon.png", hp:16,  colors:3 },
+	{ name:"Water Loa", level:"Common", img:"WaterLoaCommon.png", hp:18,  colors:2 },
+
+  //Uncommon
+	{ name:"Animate", level:"Uncommon", img:"AnimateUncommon.png", hp:30,  colors:2 },
+	{ name:"Blighted Guardian", level:"Uncommon", img:"BlightedGuardianUncommon.png", hp:30,  colors:2 },
+	{ name:"Cave Sickle", level:"Uncommon", img:"CaveSickleUncommon.png", hp:16,  colors:6 },
+	{ name:"Corpse Collector", level:"Uncommon", img:"CorpseCollectorUncommon.png", hp:50,  colors:1 },
+	{ name:"Earth Loa", level:"Uncommon", img:"EarthLoaUncommon.png", hp:36,  colors:2 },
+	{ name:"Fragor", level:"Uncommon", img:"FragorUncommon.png", hp:16,  colors:3 },
+	{ name:"Gatekeeper", level:"Uncommon", img:"GatekeeperUncommon.png", hp:40,  colors:2 },
+	{ name:"Grotesque Effigy", level:"Uncommon", img:"GrotesqueEffigyUncommon.png", hp:50,  colors:1 },
+	{ name:"Lich Wurm", level:"Uncommon", img:"LichWurmUncommon.png", hp:100,  colors:1 },
+	{ name:"Living Oblation", level:"Uncommon", img:"LivingOblationUncommon.png", hp:30,  colors:1 },
+	{ name:"Merk Hound", level:"Uncommon", img:"MerkHoundUncommon.png", hp:18,  colors:3 },
+	
+  //Rare
+	{ name:"Blighted Guardian", level:"Rare", img:"BlightedGuardianRare.png", hp:40,  colors:2 },
+	{ name:"Corpse Collector", level:"Rare", img:"CorpseCollectorRare.png", hp:100,  colors:1 },
+	{ name:"Enslaved Spirit", level:"Rare", img:"EnslavedSpiritRare.png", hp:12,  colors:6 },
+	{ name:"Gevaudan", level:"Rare", img:"GevaudanRare.png", hp:30,  colors:2 },
+	{ name:"Living Oblation", level:"Rare", img:"LivingOblationRare.png", hp:40,  colors:1 },
+	{ name:"Soul Butcher", level:"Rare", img:"SoulButcherRare.png", hp:80,  colors:1 },
+	{ name:"Tortured Immortal", level:"Rare", img:"TorturedImmortalRare.png", hp:45,  colors:2 },
+	
+  //Hidden
+	{ name:"UM1", level:"Hidden", img:"UM1WhopperHidden.png", hp:80,  colors:1 },
+	{ name:"UM2", level:"Hidden", img:"UM2TheWardenHidden.png", hp:100,  colors:1 },
+	{ name:"UM5", level:"Hidden", img:"UM5MelodyHidden.png", hp:30,  colors:1 },
+	{ name:"UM9A", level:"Hidden", img:"UM9AislingHidden.png", hp:150,  colors:1 },
+	{ name:"UM9N", level:"Hidden", img:"UM9NightinggaleMalumaPossessed.png", hp:99,  colors:1 },
+	{ name:"UM16", level:"Hidden", img:"UM16JudasHidden.png", hp:300,  colors:1 },
+	{ name:"UM18D", level:"Hidden", img:"UM18DamoclesWrathfulMournerHidden.png", hp:150,  colors:1 },
+	{ name:"UM18Q", level:"Hidden", img:"UM18QuinnHidden.png", hp:50,  colors:["Teal"] },
+	{ name:"UM18T", level:"Hidden", img:"UM18TitusHidden.png", hp:50,  colors:1 },
+	{ name:"UM23", level:"Hidden", img:"UM23BlightedHendrixHidden.png", hp:300,  colors:1 },
+	{ name:"UM28A", level:"Hidden", img:"UM28AlanaHidden.png", hp:400,  colors:1 },
+	{ name:"UM28C", level:"Hidden", img:"UM8CasithusHidden.png", hp:600,  colors:1 },
+	{ name:"UM36", level:"Hidden", img:"UM1UrsyHidden.png", hp:18,  colors:1 },
+	{ name:"UM40B", level:"Hidden", img:"UM40BreaHidden.png", hp:100,  colors:1 },
+	{ name:"UM40Ec", level:"Hidden", img:"UM40EchoHidden.png", hp:150,  colors:1 },
+	{ name:"UM40Ez", level:"Hidden", img:"UM40EzraHidden.png", hp:100,  colors:1 },
+	{ name:"UM40S", level:"Hidden", img:"UM40SoulStitcherHidden.png", hp:150,  colors:1 },
+	{ name:"UM41", level:"Hidden", img:"UM41ZafirHidden.png", hp:200,  colors:1 },
+	{ name:"UM46", level:"Hidden", img:"UM46ObsceneRescindeoHidden.png", hp:500,  colors:1 },
+	{ name:"UM47", level:"Hidden", img:"UM47AncientPixiesHidden.png", hp:80,  colors:2 },
+	{ name:"UM49", level:"Hidden", img:"UM49DaedalusHidden.png", hp:500,  colors:1 },
+	{ name:"UM51", level:"Hidden", img:"UM51ShadowLordHidden.png", hp:500,  colors:1 },
+	{ name:"UM54a", level:"Hidden", img:"UM54SivaniGuardianHidden.png", hp:50,  colors:1 },
+	{ name:"UM54b", level:"Hidden", img:"UM54SivaniGuardian2Hidden.png", hp:50,  colors:["Teal"] },
+	{ name:"UM54S", level:"Hidden", img:"UM54SubjugatedOblationHidden.png", hp:200,  colors:1 },
+	
+//Espers
+	{ name:"Espers", level:"Espers", img:"Esper.png", hp:99,  colors:1 },
+	 
+];
+
+/* ▙▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄  END OF YOUR DATA  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▟ */
+
+
+/* ---------------- engine ---------------- */
+const STORE_KEY = "middara.tracker.v1";
+let board = [];          // [{ id, mi, slots:[{state,hp}] }]
+let active = null;       // group id
+let uid = 1;
+
+const $ = s => document.querySelector(s);
+const pickEl = $("#pick"), lvlEl = $("#lvl"), qtyEl = $("#qty"), tabsEl = $("#tabs"), stageEl = $("#stage");
+
+function colorIndicesOf(mi){
+  const c = MONSTERS[mi].colors;
+  if(Array.isArray(c)){                       // explicit colors, e.g. ["Teal"] or ["Red","Purple"]
+    return c.map(n => COLORS.findIndex(col => col.name.toLowerCase() === String(n).toLowerCase()))
+            .filter(i => i >= 0);
+  }
+  return Array.from({length: Math.min(c, COLORS.length)}, (_,i)=>i);   // a number = first N of the ladder
+}
+function capOf(mi){ return colorIndicesOf(mi).length; }
+function group(id){ return board.find(g => g.id === id); }
+function aliveCount(g){ return g.slots.filter(s => s.state === "active").length; }
+
+/* ---- setup dropdowns (Loot level -> Monster -> Number) ---- */
+function isTaken(i){ return board.some(g => g.mi === i); }
+
+function fillLootLevels(){
+  lvlEl.innerHTML = LOOT_LEVELS.map(l=>`<option value="${l}">${l}</option>`).join("");
+  fillMonsters();
+}
+function fillMonsters(){
+  const lvl = lvlEl.value;
+  const avail = MONSTERS.map((m,i)=>({m,i})).filter(x => x.m.level === lvl && !isTaken(x.i));
+  const add = $("#add");
+  if(!avail.length){
+    pickEl.innerHTML = `<option value="">No ${lvl} monsters available</option>`;
+    qtyEl.innerHTML = "";
+    pickEl.disabled = qtyEl.disabled = add.disabled = true;
+    return;
+  }
+  pickEl.disabled = qtyEl.disabled = add.disabled = false;
+  const prev = pickEl.value;
+  pickEl.innerHTML = avail.map(x=>`<option value="${x.i}">${x.m.name}</option>`).join("");
+  if(avail.some(x=>String(x.i)===prev)) pickEl.value = prev;
+  fillQty();
+}
+function fillQty(){
+  const mi = +pickEl.value;
+  if(!MONSTERS[mi]){ qtyEl.innerHTML = ""; return; }
+  const cap = capOf(mi);
+  qtyEl.innerHTML = Array.from({length:cap},(_,i)=>`<option value="${i+1}">${i+1}</option>`).join("");
+}
+lvlEl.addEventListener("change", fillMonsters);
+pickEl.addEventListener("change", fillQty);
+
+/* ---- add a group ---- */
+$("#add").addEventListener("click", ()=>{
+  const mi = +pickEl.value, qty = +qtyEl.value;
+  if(pickEl.value === "" || !MONSTERS[mi] || board.some(g => g.mi === mi)) return;   // no dupes
+  const cap = capOf(mi);
+  const slots = Array.from({length:cap},(_,i)=>(
+    i < qty ? { state:"active", hp:MONSTERS[mi].hp } : { state:"unused", hp:0 }
+  ));
+  const g = { id:uid++, mi, slots };
+  board.push(g); active = g.id;
+  save(); render(); fillMonsters();
+});
+
+/* ---- spawn: fill lowest color not currently occupied by a living monster ---- */
+function spawn(id){
+  const g = group(id); if(!g) return;
+  const i = g.slots.findIndex(s => s.state !== "active");
+  if(i === -1) return;                    // every color already alive
+  g.slots[i] = { state:"active", hp:MONSTERS[g.mi].hp };
+  save(); render();
+}
+
+/* ---- damage / heal (floor 0, no ceiling) ---- */
+function bump(id, i, d){
+  const g = group(id); const s = g.slots[i];
+  if(s.state !== "active") return;
+  s.hp += d;
+  if(s.hp <= 0){ s.hp = 0; s.state = "dead"; }
+  save(); render();
+}
+/* ---- type an exact value ---- */
+function setHp(id, i, v){
+  const g = group(id); const s = g.slots[i];
+  if(s.state !== "active") return;
+  v = Math.floor(Number(v));
+  if(!Number.isFinite(v)) return render();
+  if(v <= 0){ s.hp = 0; s.state = "dead"; } else { s.hp = v; }
+  save(); render();
+}
+/* ---- kill instantly (defeated / fled) ---- */
+function killSlot(id, i){
+  const g = group(id); const s = g.slots[i];
+  if(s.state !== "active") return;
+  s.hp = 0; s.state = "dead";
+  save(); render();
+}
+
+/* ---- remove a whole group ---- */
+function removeGroup(id){
+  board = board.filter(g => g.id !== id);
+  if(active === id) active = board.length ? board[board.length-1].id : null;
+  save(); render(); fillMonsters();
+}
+
+/* ---------------- render ---------------- */
+function render(){
+  // tabs
+  tabsEl.innerHTML = board.map(g=>{
+    const m = MONSTERS[g.mi], cap = capOf(g.mi);
+    const dots = g.slots.map((s,i)=>
+`<span class="dot ${s.state==="active"?"on":""}" style="--dc:${COLORS[colorIndicesOf(g.mi)[i]].hex}"></span>`).join("");
+    return `<div class="tab ${g.id===active?"active":""}" data-id="${g.id}">
+      <button class="close" data-close="${g.id}" title="Remove group">✕</button>
+      <span class="tname">${m.name}</span>
+      <span class="tmeta">${m.level} · <b>${aliveCount(g)}</b>/${cap}
+        <span class="dots">${dots}</span></span>
+    </div>`;
+  }).join("");
+
+  // stage
+  if(!board.length){
+    stageEl.innerHTML = `<div class="empty">
+      <div class="glyph">⚔</div>
+      <h2>The board is clear</h2>
+      <p>Pick a loot level, a monster, and how many up top, then add to start the fight.
+         Add more any time — each monster gets its own tab.</p></div>`;
+    return;
+  }
+  if(!group(active)) active = board[0].id;
+  const g = group(active), m = MONSTERS[g.mi], cap = capOf(g.mi);
+
+  const counters = g.slots.map((s,i)=>{
+    if(s.state === "unused") return "";      // not yet brought into play
+const c = COLORS[colorIndicesOf(g.mi)[i]];
+    if(s.state === "dead"){
+      return `<div class="counter dead" style="--tok:${c.hex}">
+        <div class="ctop"><span class="cname">${c.name}</span></div>
+        <div class="hp"><span class="num">0</span></div></div>`;
+    }
+    return `<div class="counter" style="--tok:${c.hex}">
+      <div class="ctop">
+        <span class="cname">${c.name}</span>
+        <button class="kill" data-kill="${i}" title="Defeated / fled">✕</button>
+      </div>
+      <div class="hp">
+        <button class="step minus" data-dmg="${i}">–</button>
+        <span class="num" data-edit="${i}">${s.hp}</span>
+        <button class="step plus" data-heal="${i}">+</button>
+      </div></div>`;
+  }).join("");
+
+  const canSpawn = aliveCount(g) < cap;
+  stageEl.innerHTML = `<div class="group">
+    <div class="card-holder">
+      <img class="card-img" alt="${m.name}" src="${/^https?:\/\//.test(m.img) ? m.img : IMG_BASE + m.img}"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+      <div class="art-fallback" style="display:none">
+        <div class="glyph">✦</div>
+        <div class="fname">${m.name}</div>
+        <div class="flvl">${m.level}</div>
+        <div class="fhint">Card art not loaded. Point this monster's <b>img</b> at <b>${m.img}</b> — a file beside this page, or a full image URL.</div>
+      </div>
+    </div>
+    <div class="counters-wrap">
+      <div class="group-bar">
+        <button class="btn primary" id="spawn" ${canSpawn?"":"disabled"}>＋ Spawn</button>
+      </div>
+      <div class="counters">${counters}</div>
+    </div>
+  </div>`;
+}
+
+/* ---------------- events (delegated) ---------------- */
+tabsEl.addEventListener("click", e=>{
+  const close = e.target.closest("[data-close]");
+  if(close){ confirmRemove(+close.dataset.close); return; }
+  const tab = e.target.closest(".tab");
+  if(tab){ active = +tab.dataset.id; render(); }
+});
+
+stageEl.addEventListener("click", e=>{
+  const g = group(active); if(!g) return;
+  if(e.target.id === "spawn"){ spawn(active); return; }
+  const dmg = e.target.closest("[data-dmg]");   if(dmg){ bump(active,+dmg.dataset.dmg,-1); return; }
+  const heal= e.target.closest("[data-heal]");  if(heal){ bump(active,+heal.dataset.heal,+1); return; }
+  const kill= e.target.closest("[data-kill]");  if(kill){ killSlot(active,+kill.dataset.kill); return; }
+  const edit= e.target.closest("[data-edit]");  if(edit){ startEdit(edit,+edit.dataset.edit); }
+});
+
+function startEdit(span, i){
+  const cur = span.textContent;
+  const inp = document.createElement("input");
+  inp.type="number"; inp.className="edit"; inp.value=cur; inp.inputMode="numeric";
+  span.replaceWith(inp); inp.focus(); inp.select();
+  const commit = ()=> setHp(active, i, inp.value);
+  inp.addEventListener("blur", commit);
+  inp.addEventListener("keydown", ev=>{
+    if(ev.key==="Enter"){ inp.blur(); }
+    if(ev.key==="Escape"){ inp.removeEventListener("blur",commit); render(); }
+  });
+}
+
+/* ---------------- confirm dialog ---------------- */
+const scrim=$("#scrim"); let onYes=null;
+function ask(title, body, yes){
+  $("#dlgTitle").textContent=title; $("#dlgBody").textContent=body;
+  onYes=yes; scrim.classList.add("show");
+}
+$("#dlgYes").addEventListener("click", ()=>{ scrim.classList.remove("show"); if(onYes)onYes(); onYes=null; });
+$("#dlgNo").addEventListener("click", ()=>{ scrim.classList.remove("show"); onYes=null; });
+scrim.addEventListener("click", e=>{ if(e.target===scrim){ scrim.classList.remove("show"); onYes=null; }});
+
+function confirmRemove(id){
+  const g=group(id); const m=MONSTERS[g.mi];
+  ask("Remove this group?", `${m.name} — ${m.level} will be taken off the board. This can't be undone.`,
+      ()=>removeGroup(id));
+}
+$("#clear").addEventListener("click", ()=>{
+  if(!board.length) return;
+  ask("Start a new encounter?", "Every group and all current life totals will be cleared.",
+      ()=>{ board=[]; active=null; uid=1; localStorage.removeItem(STORE_KEY); render(); fillMonsters(); });
+});
+
+/* ---------------- fullscreen ---------------- */
+$("#full").addEventListener("click", ()=>{
+  if(!document.fullscreenElement){ document.documentElement.requestFullscreen?.(); }
+  else{ document.exitFullscreen?.(); }
+});
+
+/* ---------------- persistence + tab awareness ----------------
+   The save lives in this browser's local storage. A second browser
+   tab of the page would share that save, so tabs simply announce
+   themselves over a BroadcastChannel: if another tab is already live,
+   this one suppresses the "restore" prompt (so it can't overwrite the
+   live fight) and shows a note instead. No board state is ever pushed
+   between tabs — whatever you add stays put.
+   ------------------------------------------------------------------ */
+const bc = ("BroadcastChannel" in window) ? new BroadcastChannel("middara-tracker") : null;
+let siblingSeen = false;
+if(bc){
+  bc.onmessage = ev=>{
+    const m = ev.data || {};
+    if(m.type === "ping"){ bc.postMessage({ type:"pong" }); }   // "I'm here"
+    else if(m.type === "pong"){ siblingSeen = true; }           // someone answered
+  };
+}
+
+function save(){
+  if(!board.length){ localStorage.removeItem(STORE_KEY); }
+  else { localStorage.setItem(STORE_KEY, JSON.stringify({ board, active, uid, t:Date.now() })); }
+}
+function loadSaved(){
+  try{ return JSON.parse(localStorage.getItem(STORE_KEY)); }catch{ return null; }
+}
+function slotsMatchData(s){
+  return s && s.board && s.board.every(g => MONSTERS[g.mi] && g.slots.length === capOf(g.mi));
+}
+function adoptState(s){
+  board = s.board || [];
+  uid = s.uid || (board.length ? Math.max(0,...board.map(g=>g.id))+1 : 1);
+  if(!board.find(g => g.id === active)) active = (s.active ?? (board[0] ? board[0].id : null));
+}
+
+/* ---------------- boot ---------------- */
+function showRestoreBar(saved){
+  const bar=$("#restoreBar");
+  const mins=Math.round((Date.now()-(saved.t||Date.now()))/60000);
+  $("#restoreWhen").textContent = mins<1 ? "moments ago" : mins===1 ? "1 minute ago" : mins+" minutes ago";
+  bar.classList.add("show");
+  $("#restoreYes").onclick = ()=>{ adoptState(saved); bar.classList.remove("show"); render(); fillMonsters(); };
+  $("#restoreNo").onclick  = ()=>{ localStorage.removeItem(STORE_KEY); bar.classList.remove("show"); };
+}
+$("#syncOk").onclick = ()=> $("#syncNote").classList.remove("show");
+
+function bootDecide(){
+  const saved = loadSaved();
+  if(!(saved && saved.board && saved.board.length && slotsMatchData(saved))) return;
+  if(siblingSeen){ $("#syncNote").classList.add("show"); }   // another tab holds the fight; don't touch it
+  else { showRestoreBar(saved); }                            // genuine reopen after close
+}
+
+fillLootLevels();
+render();
+if(bc){ bc.postMessage({ type:"ping" }); setTimeout(bootDecide, 300); }
+else  { bootDecide(); }
+</script>
+</body>
+</html>
