@@ -334,7 +334,7 @@ const COLORS = [
   { name:"Gold", hex:"#c79433" },
 ];
 
-const CARD_SET = ["Mundane", "Common", "Uncommon", "Rare", "Hidden", "Espers","BE1","Variations"];
+const CARD_SET = ["Mundane", "Common", "Uncommon", "Rare", "Hidden", "Espers","BE1","Var/Alts"];
 const IMG_BASE = "https://raw.githubusercontent.com/jazravenwing/Middara/main/";
 
 const MONSTERS = [
@@ -377,6 +377,9 @@ const MONSTERS = [
 	{ name:"Living Oblation", set:"Rare", img:"LivingOblationRare.png", hp:40,  colors:1 },
 	{ name:"Soul Butcher", set:"Rare", img:"SoulButcherRare.png", hp:80,  colors:1 },
 	{ name:"Tortured Immortal", set:"Rare", img:"TorturedImmortalRare.png", hp:45,  colors:2 },
+  //Epic
+  //Legendary
+  //Mythic
 	
   //Hidden
 	{ name:"UM1", set:"Hidden", img:"UM1WhopperHidden.png", hp:80,  colors:1 },
@@ -421,19 +424,59 @@ const MONSTERS = [
 	{ name:"Khala", set:"BE1", img:"KhalaBE1.png", hp:80,  colors:1 },
 
 
-//Variations
-	{ name:"Cave Sickle:Burrowing(M)", set:"Variations", img:"CSBurrowingM-Variation.png", hp:6,  colors:9 },
-	{ name:"Cave Sickle:Burrowing(C)", set:"Variations", img:"CSBurrowingC-Variation.png", hp:12,  colors:9},
-	{ name:"Cave Sickle:Burrowing(UC)", set:"Variations", img:"CSBurrowingUC-Variation.png", hp:16,  colors:9 },
-	{ name:"Cave Sickle:Defender(M)", set:"Variations", img:"CSDefenderM-Variation.png", hp:8,  colors:2 },
-	{ name:"Cave Sickle:Defender(C)", set:"Variations", img:"CSDefenderC-Variation.png", hp:16,  colors:2 },
-	{ name:"Cave Sickle:Defender(UC)", set:"Variations", img:"CSDefenderUC-Variation.png", hp:20,  colors:2 },
-	{ name:"Cave Sickle:Warrior(M)", set:"Variations", img:"CSWarriorM-Variation.png", hp:10,  colors:2 },
-	{ name:"Cave Sickle:Warrior(C)", set:"Variations", img:"CSWarriorC-Variation.png", hp:22,  colors:2 },
-	{ name:"Cave Sickle:Warrior(UC)", set:"Variations", img:"CSWarriorUC-Variation.png", hp:30,  colors:2 },
-	{ name:"Cave Sickle:Queen(M)", set:"Variations", img:"CSQueenM-Variation.png", hp:18,  colors:1 },
-	{ name:"Cave Sickle:Queen(C)", set:"Variations", img:"CSQueenC-Variation.png", hp:36,  colors:1 },
-	{ name:"Cave Sickle:Queen(UC)", set:"Variations", img:"CSQueenUC-Variation.png", hp:48,  colors:1 },
+//Var/Alts
+	{ name:"Animate:Alchemical Variation(M)", set:"Var/Alts", img:"AAlchemicalM-Variation.png", hp:18,  colors:4 },
+	{ name:"Animate:Alchemical Variation(UC)", set:"Var/Alts", img:"AAlchemicalUC-Variation.png", hp:30,  colors:4 },
+	{ name:"Animate:Alchemical Variation(E)", set:"Var/Alts", img:"AAlchemicalE-Variation.png", hp:42,  colors:4 },
+	{ name:"Animate:Alchemical Variation(L)", set:"Var/Alts", img:"AAlchemicalL-Variation.png", hp:48,  colors:4 },
+	{ name:"Animate:Alchemical Variation(My)", set:"Var/Alts", img:"AAlchemicalMy-Variation.png", hp:55,  colors:4 },
+	{ name:"Blighted Guardian:Relentless Decay(UC)", set:"Var/Alts", img:"BGRelentlessDecayUC-Variation.png", hp:30,  colors:2 },
+	{ name:"Blighted Guardian:Relentless Decay(R)", set:"Var/Alts", img:"BGRelentlessDecayR-Variation.png", hp:40,  colors:2 },
+	{ name:"Blighted Guardian:Relentless Decay(L)", set:"Var/Alts", img:"BGRelentlessDecayL-Variation.png", hp:75,  colors:2 },
+	{ name:"Cave Sickle:Burrowing(M)", set:"Var/Alts", img:"CSBurrowingM-Variation.png", hp:6,  colors:9 },
+	{ name:"Cave Sickle:Burrowing(C)", set:"Var/Alts", img:"CSBurrowingC-Variation.png", hp:12,  colors:9},
+	{ name:"Cave Sickle:Burrowing(UC)", set:"Var/Alts", img:"CSBurrowingUC-Variation.png", hp:16,  colors:9 },
+	{ name:"Cave Sickle:Defender(M)", set:"Var/Alts", img:"CSDefenderM-Variation.png", hp:8,  colors:2 },
+	{ name:"Cave Sickle:Defender(C)", set:"Var/Alts", img:"CSDefenderC-Variation.png", hp:16,  colors:2 },
+	{ name:"Cave Sickle:Defender(UC)", set:"Var/Alts", img:"CSDefenderUC-Variation.png", hp:20,  colors:2 },
+	{ name:"Cave Sickle:Hive Guardian(M)", set:"Var/Alts", img:"CSHiveGuardianM-Variation.png", hp:6,  colors:6 },
+	{ name:"Cave Sickle:Hive Guardian(C)", set:"Var/Alts", img:"CSHiveGuardianC-Variation.png", hp:12,  colors:6 },
+	{ name:"Cave Sickle:Hive Guardian(UC)", set:"Var/Alts", img:"CSHiveGuardianUC-Variation.png", hp:16,  colors:6 },
+	{ name:"Cave Sickle:Warrior(M)", set:"Var/Alts", img:"CSWarriorM-Variation.png", hp:10,  colors:2 },
+	{ name:"Cave Sickle:Warrior(C)", set:"Var/Alts", img:"CSWarriorC-Variation.png", hp:22,  colors:2 },
+	{ name:"Cave Sickle:Warrior(UC)", set:"Var/Alts", img:"CSWarriorUC-Variation.png", hp:30,  colors:2 },
+	{ name:"Cave Sickle:Queen(M)", set:"Var/Alts", img:"CSQueenM-Variation.png", hp:18,  colors:1 },
+	{ name:"Cave Sickle:Queen(C)", set:"Var/Alts", img:"CSQueenC-Variation.png", hp:36,  colors:1 },
+	{ name:"Cave Sickle:Queen(UC)", set:"Var/Alts", img:"CSQueenUC-Variation.png", hp:48,  colors:1 },
+	{ name:"Corpse Collector:Ravenous Appetite(UC)", set:"Var/Alts", img:"CCRavenousAppetiteUC-Variation.png", hp:50,  colors:1 },
+	{ name:"Corpse Collector:Ravenous Appetite(R)", set:"Var/Alts", img:"CCRavenousAppetiteR-Variation.png", hp:100,  colors:1 },
+	{ name:"Corpse Collector:Ravenous Appetite(E)", set:"Var/Alts", img:"CCRavenousAppetiteE-Variation.png", hp:120,  colors:1 },
+	{ name:"Earth Loa:Territorial Truffula(M)", set:"Var/Alts", img:"ELTerritorialTruffulaM-Variation.png", hp:20,  colors:2 },
+	{ name:"Earth Loa:Territorial Truffula(C)", set:"Var/Alts", img:"ELTerritorialTruffulaC-Variation.png", hp:30,  colors:2 },
+	{ name:"Earth Loa:Territorial Truffula(UC)", set:"Var/Alts", img:"ELTerritorialTruffulaUC-Variation.png", hp:36,  colors:2 },
+	{ name:"Earth Loa:Territorial Truffula(L)", set:"Var/Alts", img:"ELTerritorialTruffulaL-Variation.png", hp:80,  colors:2 },
+	{ name:"Fragor:Apex Luminosity(C)", set:"Var/Alts", img:"FApexLuminosityC-Variation.png", hp:12,  colors:3 },
+	{ name:"Fragor:Apex Luminosity(UC)", set:"Var/Alts", img:"FApexLuminosityUC-Variation.png", hp:16,  colors:3 },
+	{ name:"Gatekeeper:Stringmaster(UC)", set:"Var/Alts", img:"GStringmasterUC-Variation.png", hp:40,  colors:2 },
+	{ name:"Gevaudan:Feral Deviation(M)", set:"Var/Alts", img:"GFeralDeviationM-Variation.png", hp:12,  colors:2 },
+	{ name:"Gevaudan:Feral Deviation(C)", set:"Var/Alts", img:"GFeralDeviationC-Variation.png", hp:18,  colors:2 },
+	{ name:"Gevaudan:Feral Deviation(R)", set:"Var/Alts", img:"GFeralDeviationR-Variation.png", hp:30,  colors:2 },
+	{ name:"Grotesque Effigy:Cyclone Forest(UC)", set:"Var/Alts", img:"GECycloneForestUC-Variation.png", hp:50,  colors:1 },
+	{ name:"Lich Wurm:Crushing Darkness(UC)", set:"Var/Alts", img:"LWCrushingDarknessUC-Variation.png", hp:100,  colors:1 },
+	{ name:"Living Oblation:Augmented Pact(UC)", set:"Var/Alts", img:"LOAugmentedPactUC-Variation.png", hp:30,  colors:1 },
+	{ name:"Living Oblation:Augmented Pact(R)", set:"Var/Alts", img:"LOAugmentedPactR-Variation.png", hp:40,  colors:1 },
+	{ name:"Living Oblation:Augmented Pact(E)", set:"Var/Alts", img:"LOAugmentedPactE-Variation.png", hp:55,  colors:1 },
+	{ name:"Living Oblation:Augmented Pact(L)", set:"Var/Alts", img:"LOAugmentedPactL-Variation.png", hp:70,  colors:1 },
+	{ name:"Living Oblation:Augmented Pact(My)", set:"Var/Alts", img:"LOAugmentedPactMy-Variation.png", hp:85,  colors:1 },
+	{ name:"Merk Hound:Honed Spines(C)", set:"Var/Alts", img:"MHHonedSpinesC-Variation.png", hp:16,  colors:3 },
+	{ name:"Merk Hound:Honed Spines(UC)", set:"Var/Alts", img:"MHHonedSpinesUC-Variation.png", hp:18,  colors:3 },
+	{ name:"Merk Hound:Honed Spines(E)", set:"Var/Alts", img:"MHHonedSpinesE-Variation.png", hp:40,  colors:3 },
+	{ name:"Soul Butcher:Tenderizing Terror(R)", set:"Var/Alts", img:"SBTenderizingTerrorR-Variation.png", hp:80,  colors:1 },
+	{ name:"Soul Butcher:Tenderizing Terror(E)", set:"Var/Alts", img:"SBTenderizingTerrorE-Variation.png", hp:100,  colors:1 },
+	{ name:"Tortured Immortal:Master of Chains(R)", set:"Var/Alts", img:"TIMasterofChainsR-Variation.png", hp:45,  colors:2 },
+	{ name:"Tortured Immortal:Master of Chains(E)", set:"Var/Alts", img:"TIMasterofChainsE-Variation.png", hp:60,  colors:2 },
+	{ name:"Water Loa:Arcane Asphyxia(M)", set:"Var/Alts", img:"WLArcaneAsphyziaM-Variation.png", hp:12,  colors:2 },
+	{ name:"Water Loa:Arcane Asphyxia(C)", set:"Var/Alts", img:"WLArcaneAsphyziaC-Variation.png", hp:18,  colors:2 },
 	
 ];
 
