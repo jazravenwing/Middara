@@ -30,6 +30,7 @@ select,.btn{font-family:inherit;font-size:13px;background:var(--panel-2);color:v
 .badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
   padding:4px 9px;border-radius:20px;color:#fff;white-space:nowrap;}
 .badge svg{width:14px;height:14px;fill:currentColor;}
+.badge.loot{background:#4a3a6a;}
 .spacer{flex:1;}
 
 /* map stage */
@@ -63,6 +64,7 @@ select,.btn{font-family:inherit;font-size:13px;background:var(--panel-2);color:v
   <select id="chapPick" title="Chapter"></select>
   <select id="mapPick" title="Map"></select>
   <span id="typeBadge" class="badge"></span>
+  <span id="lootBadge" class="badge loot"></span>
   <span class="spacer"></span>
   <button class="btn" id="setupBtn">Setup</button>
   <button class="btn" id="fitBtn">Fit</button>
@@ -102,6 +104,7 @@ const MAPS = [
     chapter:"Chapter 1",
     title:"The Mast: Day 1",
     type:"Underground",
+	loot_lvl:"Mundane",
     img:"TheMastDay1.png",
     tiles:["UM1, UM9, UM11"],
 	terrain:["1 x Obstructing"],
@@ -116,6 +119,7 @@ const MAPS = [
     chapter:"Chapter 1",
     title:"The Mast: Day 2",
     type:"Underground",
+	loot_lvl:"Mundane",
     img:"TheMastDay2.png",
     tiles:["UM3, UM5, UM7, UM11"],
 	terrain:[],
@@ -130,6 +134,7 @@ const MAPS = [
     chapter:"Chapter 1",
     title:"The Gauntlet: Chamber 1",
     type:"Underground",
+	loot_lvl:"Mundane",
     img:"TheGauntletChamber1.png",
     tiles:["UM3, UM15, UM17, UM19"],
 	terrain:["2 x Long Obstructing"],
@@ -144,6 +149,7 @@ const MAPS = [
     chapter:"Chapter 1",
     title:"The Gauntlet: Chamber 2",
     type:"Underground",
+	loot_lvl:"Mundane",
     img:"TheGauntletChamber2.png",
     tiles:["UM5, UM7, UM15, UM17, UM19, UM21"],
 	terrain:["4 x Long Water"],
@@ -158,6 +164,7 @@ const MAPS = [
     chapter:"Chapter 1",
     title:"A Dangerous Path",
     type:"Underground",
+	loot_lvl:"Mundane",
     img:"ADangerousPath.png",
     tiles:["UM42, UM64, UM68"],
 	terrain:[],
@@ -172,6 +179,7 @@ const MAPS = [
     chapter:"Chapter 1",
     title:"Rumble in the Dark",
     type:"Underground",
+	loot_lvl:"Mundane",
     img:"RumbleInTheDark.png",
     tiles:["UM44, UM46, UM48, UM50, UM66, UM72"],
 	terrain:[],
@@ -186,6 +194,7 @@ const MAPS = [
     chapter:"Chapter 1",
     title:"Into the Gloom",
     type:"Underground",
+	loot_lvl:"Mundane",
     img:"IntoTheGloom.png",
     tiles:["UM42, UM48, UM64"],
 	terrain:[],
@@ -200,6 +209,7 @@ const MAPS = [
     chapter:"Chapter 1",
     title:"Loa Altar",
     type:"Wilderness",
+	loot_lvl:"Mundane",
     img:"LoaAltar.png",
     tiles:["UM31, UM33, UM35, UM37, UM39, UM43, UM45, UM51, UM53"],
     terrain:[],
@@ -214,6 +224,7 @@ const MAPS = [
     chapter:"Chapter 1",
     title:"Bombing the Sickles",
     type:"Underground",
+	loot_lvl:"Mundane",
     img:"BombingTheSickles.png",
     tiles:["UM1, UM3, UM9, UM11, UM43"],
 	terrain:["2 x Long Water"],
@@ -228,6 +239,7 @@ const MAPS = [
     chapter:"Chapter 1",
     title:"Dank Grotto",
     type:"Underground",
+	loot_lvl:"Mundane",
     img:"DankGrotto.png",
     tiles:["UM5, UM15, UM19, UM21"],
 	terrain:["2 x Long Obstructing","2 x Long Water","1 x Water"],
@@ -242,6 +254,7 @@ const MAPS = [
     chapter:"Chapter 1",
     title:"Sickles Upon Sickles",
     type:"Underground",
+	loot_lvl:"Mundane",
     img:"SicklesUponSickles.png",
     tiles:["UM1, UM3, UM5, UM7, UM11"],
 	terrain:["2 x Passage"],
@@ -256,6 +269,22 @@ const MAPS = [
     chapter:"Chapter 1",
     title:"Retracing Their Steps",
     type:"Underground",
+	loot_lvl:"Mundane",
+    img:"RetracingTheirSteps.png",
+    tiles:["UM42, UM46, UM62, UM66"],
+	terrain:["2 x Long Obstructing","1 x Long Dangerous","1 x Obstructing"],
+    totems:["1 x Blue"],
+    objectives:["1 x Blue"],
+    loot:["2 x Random"],
+	exits:["1 x Blue"],
+    figures:["5 x Cave Sickles"],
+  },
+  {
+    act:"Act 1",
+    chapter:"Chapter 1",
+    title:"Retracing Their Steps",
+    type:"Underground",
+	loot_lvl:"Mundane",
     img:"RetracingTheirSteps.png",
     tiles:["UM42, UM46, UM62, UM66"],
 	terrain:["2 x Long Obstructing","1 x Long Dangerous","1 x Obstructing"],
@@ -270,6 +299,7 @@ const MAPS = [
     chapter:"Chapter 2",
     title:"Example Map 2",
     type:"Underground",
+	loot_lvl:"Mundane",
     img:"ExampleMap2.png",
     tiles:["UM44, UM46, UM48, UM50, UM66, UM72"],
     terrain:[],
@@ -311,9 +341,11 @@ function fillMaps(act,chap,selIdx){ $("#mapPick").innerHTML = mapsOf(act,chap).m
 function renderBadge(m){
   const t=TYPES[(m.type||"").toLowerCase()];
   const b=$("#typeBadge");
-  if(!t){ b.style.display="none"; return; }
-  b.style.display="inline-flex"; b.style.background=t.color;
-  b.innerHTML = t.icon + esc(m.type);
+  if(!t){ b.style.display="none"; }
+  else { b.style.display="inline-flex"; b.style.background=t.color; b.innerHTML = t.icon + esc(m.type); }
+  const lb=$("#lootBadge");
+  if(m.loot_lvl){ lb.style.display="inline-flex"; lb.textContent = esc(m.loot_lvl); }
+  else { lb.style.display="none"; }
 }
 function renderSetup(m){
   $("#setupBody").innerHTML = FIELDS.filter(f=>Array.isArray(m[f.key]) && m[f.key].length)
