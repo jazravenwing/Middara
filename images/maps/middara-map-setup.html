@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<title>Middara Map Setup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#141019; --panel:#231b2b; --panel-2:#2b2130; --edge:#3a2f42;
+  --ink:#f3ecdf; --ink-dim:#a79bb0; --ink-faint:#6f6377; --brass:#cba24b; --brass-dim:#8f7534;
+  --shadow:0 8px 26px rgba(0,0,0,.55); --r:12px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;height:100%;overflow:hidden;}
+body{background:#0d0a12;color:var(--ink);font-family:"Oswald","Segoe UI",system-ui,-apple-system,sans-serif;
+  -webkit-font-smoothing:antialiased;display:flex;flex-direction:column;height:100dvh;}
+
+/* small top bar */
+.topbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 10px;z-index:30;
+  background:linear-gradient(180deg,rgba(28,22,34,.96),rgba(28,22,34,.82));border-bottom:1px solid var(--edge);backdrop-filter:blur(6px);}
+.brand{font-family:"Cinzel",serif;font-size:12px;letter-spacing:.12em;color:var(--brass);text-transform:uppercase;white-space:nowrap;}
+select,.btn{font-family:inherit;font-size:13px;background:var(--panel-2);color:var(--ink);
+  border:1px solid var(--edge);border-radius:8px;padding:5px 8px;min-height:32px;cursor:pointer;max-width:30vw;min-width:0;}
+.btn{white-space:nowrap;}
+.btn:active{transform:translateY(1px);}
+.btn.primary{background:linear-gradient(180deg,#d9b358,#b98f30);color:#231a08;border-color:var(--brass);font-weight:600;}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  padding:4px 9px;border-radius:20px;color:#fff;white-space:nowrap;}
+.badge svg{width:14px;height:14px;fill:currentColor;}
+.spacer{flex:1;}
+
+/* map stage */
+.stage{position:relative;flex:1;min-height:0;overflow:hidden;touch-action:none;background:#0d0a12;cursor:grab;}
+.stage:active{cursor:grabbing;}
+#mapImg{position:absolute;top:0;left:0;transform-origin:0 0;user-select:none;-webkit-user-drag:none;will-change:transform;}
+.stage .hint{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);font-size:11px;color:var(--ink-faint);
+  background:rgba(20,16,25,.7);padding:4px 10px;border-radius:20px;pointer-events:none;letter-spacing:.04em;}
+
+/* setup popup */
+.scrim{position:fixed;inset:0;background:rgba(8,6,12,.68);display:none;align-items:center;justify-content:center;z-index:60;padding:16px;}
+.scrim.show{display:flex;}
+.setup{background:linear-gradient(180deg,var(--panel),#1c1622);border:1px solid var(--brass-dim);border-radius:var(--r);
+  box-shadow:var(--shadow);width:320px;max-width:100%;max-height:88vh;display:flex;flex-direction:column;}
+.setup h2{font-family:"Cinzel",serif;font-weight:700;letter-spacing:.14em;text-transform:uppercase;text-align:center;
+  color:var(--ink);font-size:20px;margin:0;padding:14px 16px 10px;border-bottom:1px solid var(--edge);}
+.setup .body{padding:12px 16px;overflow-y:auto;}
+.fld{margin-bottom:11px;text-align:center;}
+.fld:last-child{margin-bottom:0;}
+.fname{font-family:"Cinzel",serif;font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--brass);margin-bottom:3px;}
+.fline{font-size:14px;color:var(--ink);line-height:1.35;}
+.setup .foot{padding:12px 16px;border-top:1px solid var(--edge);}
+.setup .ok{width:100%;font-family:inherit;font-size:15px;font-weight:600;background:linear-gradient(180deg,#d9b358,#b98f30);
+  color:#231a08;border:1px solid var(--brass);border-radius:9px;padding:9px;min-height:42px;cursor:pointer;letter-spacing:.06em;}
+.setup .ok:active{transform:translateY(1px);}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <select id="actPick" title="Act"></select>
+  <select id="chapPick" title="Chapter"></select>
+  <select id="mapPick" title="Map"></select>
+  <span id="typeBadge" class="badge"></span>
+  <span class="spacer"></span>
+  <button class="btn" id="setupBtn">Setup</button>
+  <button class="btn" id="fitBtn">Fit</button>
+</div>
+
+<div class="stage" id="stage">
+  <img id="mapImg" alt="" draggable="false">
+  <div class="hint" id="hint">Pinch or scroll to zoom · drag to pan</div>
+</div>
+
+<div class="scrim" id="scrim">
+  <div class="setup">
+    <h2>Setup</h2>
+    <div class="body" id="setupBody"></div>
+    <div class="foot"><button class="ok" id="okBtn">OK</button></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   ▛▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  YOUR DATA  ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▜
+   One entry per map. Fields you leave empty ([]) are hidden.
+     act        – groups maps in the Act dropdown (e.g. "Act 1")
+     chapter    – groups maps in the Chapter dropdown (e.g. "Chapter 1")
+     title      – map name shown in the Map dropdown
+     type       – Wilderness | Underground | Dungeon
+     img        – filename in your images/maps/ folder
+                  (or a full https:// URL)
+   Setup fields are arrays; each string is its own line:
+     tiles, totems, objectives, exits, loot, figures
+   ============================================================ */
+const IMG_BASE = "https://raw.githubusercontent.com/jazravenwing/Middara/main/images/maps/";
+
+const MAPS = [
+  {
+    act:"Act 1",
+    chapter:"Chapter 1",
+    title:"Loa Altar",
+    type:"Wilderness",
+    img:"LoaAltar.png",
+    tiles:["UM31, UM33, UM35, UM37, UM39, UM43, UM45, UM51, UM53"],
+    totems:["1 x Blue","1 x Red"],
+    objectives:["1 x Blue","1 x Red","1 x Green"],
+    exits:[],
+    loot:[],
+    figures:["2 x Earth Loa","2 x Water Loa"],
+  },
+  {
+    act:"Act 1",
+    chapter:"Chapter 2",
+    title:"Example Map 2",
+    type:"Underground",
+    img:"ExampleMap2.png",
+    tiles:["UM44, UM46, UM48, UM50, UM66, UM72"],
+    totems:[],
+    objectives:["1 x Blue"],
+    exits:["1 x Blue"],
+    loot:["1 x Blue","1 x Random"],
+    figures:["2 x Animates","1 x Water Loas"],
+  },
+];
+/* ▙▄▄▄▄▄▄▄▄▄▄▄▄▄  END OF YOUR DATA  ▄▄▄▄▄▄▄▄▄▄▄▄▄▟ */
+
+const FIELDS = [
+  {key:"tiles",name:"Tiles"}, {key:"totems",name:"Totems"}, {key:"objectives",name:"Objectives"},
+  {key:"exits",name:"Exits"}, {key:"loot",name:"Loot"}, {key:"figures",name:"Figures"},
+];
+const TYPES = {
+  wilderness:{color:"#5c8a3a", icon:'<svg viewBox="0 0 24 24"><path d="M12 2 L6 11 h3 l-4 7 h6 v3 h2 v-3 h6 l-4-7 h3 Z"/></svg>'},
+  underground:{color:"#a4703a", icon:'<svg viewBox="0 0 24 24"><path d="M3 22 V12 A9 9 0 0 1 21 12 V22 H14 V15 A2 2 0 0 0 10 15 V22 Z"/></svg>'},
+  dungeon:{color:"#7d4a86", icon:'<svg viewBox="0 0 24 24"><path d="M3 22 V11 A9 9 0 0 1 21 11 V22 H3 Z M8 22 V12 M12 22 V10 M16 22 V12" fill="none" stroke="currentColor" stroke-width="2"/></svg>'},
+};
+const $ = s => document.querySelector(s);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const STORE="middara.mapsetup.last";
+
+let idx=0;
+const stage=$("#stage"), mapImg=$("#mapImg"), scrim=$("#scrim");
+
+function mapSrc(m){ return /^https?:\/\//.test(m.img) ? m.img : IMG_BASE + m.img; }
+
+/* ---- cascading pickers: Act -> Chapter -> Map ---- */
+function acts(){ const a=[]; MAPS.forEach(m=>{ if(!a.includes(m.act)) a.push(m.act); }); return a; }
+function chaptersOf(act){ const c=[]; MAPS.forEach(m=>{ if(m.act===act && !c.includes(m.chapter)) c.push(m.chapter); }); return c; }
+function mapsOf(act,chap){ return MAPS.map((m,i)=>({m,i})).filter(x=>x.m.act===act && x.m.chapter===chap); }
+function fillActs(sel){ $("#actPick").innerHTML = acts().map(a=>`<option value="${esc(a)}" ${a===sel?"selected":""}>${esc(a)}</option>`).join(""); }
+function fillChaps(act,sel){ $("#chapPick").innerHTML = chaptersOf(act).map(c=>`<option value="${esc(c)}" ${c===sel?"selected":""}>${esc(c)}</option>`).join(""); }
+function fillMaps(act,chap,selIdx){ $("#mapPick").innerHTML = mapsOf(act,chap).map(x=>`<option value="${x.i}" ${x.i===selIdx?"selected":""}>${esc(x.m.title)}</option>`).join(""); }
+function renderBadge(m){
+  const t=TYPES[(m.type||"").toLowerCase()];
+  const b=$("#typeBadge");
+  if(!t){ b.style.display="none"; return; }
+  b.style.display="inline-flex"; b.style.background=t.color;
+  b.innerHTML = t.icon + esc(m.type);
+}
+function renderSetup(m){
+  $("#setupBody").innerHTML = FIELDS.filter(f=>Array.isArray(m[f.key]) && m[f.key].length)
+    .map(f=>`<div class="fld"><div class="fname">${f.name}</div>${m[f.key].map(l=>`<div class="fline">${esc(l)}</div>`).join("")}</div>`)
+    .join("") || `<div class="fld"><div class="fline" style="color:var(--ink-dim)">No setup listed.</div></div>`;
+}
+function loadMap(i, showPopup){
+  idx=i; const m=MAPS[i];
+  try{ localStorage.setItem(STORE, String(i)); }catch{}
+  renderBadge(m); renderSetup(m);
+  mapImg.style.transform="none"; mapImg.removeAttribute("width");
+  mapImg.onload=()=>{ setFit(); };
+  mapImg.onerror=()=>{ /* keep whatever; fit still runs on load of broken? */ };
+  mapImg.src=mapSrc(m);
+  mapImg.alt=m.title;
+  if(showPopup) scrim.classList.add("show");
+}
+$("#actPick").addEventListener("change", e=>{
+  const act=e.target.value, chaps=chaptersOf(act), first=mapsOf(act,chaps[0]);
+  fillChaps(act, chaps[0]); fillMaps(act, chaps[0], first[0].i); loadMap(first[0].i, true);
+});
+$("#chapPick").addEventListener("change", e=>{
+  const act=$("#actPick").value, first=mapsOf(act, e.target.value);
+  fillMaps(act, e.target.value, first[0].i); loadMap(first[0].i, true);
+});
+$("#mapPick").addEventListener("change", e=>loadMap(+e.target.value, true));
+$("#setupBtn").addEventListener("click", ()=>scrim.classList.add("show"));
+$("#okBtn").addEventListener("click", ()=>scrim.classList.remove("show"));
+scrim.addEventListener("click", e=>{ if(e.target===scrim) scrim.classList.remove("show"); });
+
+/* ---- pan / zoom ---- */
+let baseScale=1, imgW=0, imgH=0, scale=1, tx=0, ty=0;
+function apply(){ mapImg.style.transform=`translate(${tx}px,${ty}px) scale(${scale})`; }
+function clampPan(){
+  const cw=stage.clientWidth, ch=stage.clientHeight, iw=imgW*scale, ih=imgH*scale;
+  tx = iw<=cw ? (cw-iw)/2 : clamp(tx, cw-iw, 0);
+  ty = ih<=ch ? (ch-ih)/2 : clamp(ty, ch-ih, 0);
+}
+function setFit(){
+  const cw=stage.clientWidth, ch=stage.clientHeight;
+  const nw=mapImg.naturalWidth||cw, nh=mapImg.naturalHeight||ch;
+  baseScale=Math.min(cw/nw, ch/nh);
+  imgW=nw*baseScale; imgH=nh*baseScale;
+  mapImg.style.width=imgW+"px"; mapImg.style.height=imgH+"px";
+  scale=1; clampPan(); apply();
+}
+function zoomAt(cx,cy,f){
+  const r=stage.getBoundingClientRect(), ox=cx-r.left, oy=cy-r.top;
+  const ns=clamp(scale*f,1,6), k=ns/scale;
+  tx=ox-k*(ox-tx); ty=oy-k*(oy-ty); scale=ns; clampPan(); apply();
+}
+stage.addEventListener("wheel", e=>{ e.preventDefault(); zoomAt(e.clientX,e.clientY, e.deltaY<0?1.12:1/1.12); }, {passive:false});
+
+const pts=new Map(); let lastDist=0, lastMid=null;
+stage.addEventListener("pointerdown", e=>{ stage.setPointerCapture(e.pointerId); pts.set(e.pointerId,{x:e.clientX,y:e.clientY}); });
+stage.addEventListener("pointermove", e=>{
+  if(!pts.has(e.pointerId)) return;
+  const prev=pts.get(e.pointerId); pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pts.size===1){ tx+=e.clientX-prev.x; ty+=e.clientY-prev.y; clampPan(); apply(); }
+  else if(pts.size===2){
+    const [a,b]=[...pts.values()];
+    const dist=Math.hypot(a.x-b.x,a.y-b.y), mid={x:(a.x+b.x)/2,y:(a.y+b.y)/2};
+    if(lastDist){ zoomAt(mid.x,mid.y, dist/lastDist); }
+    lastDist=dist; lastMid=mid;
+  }
+});
+function up(e){ pts.delete(e.pointerId); if(pts.size<2) lastDist=0; }
+stage.addEventListener("pointerup", up); stage.addEventListener("pointercancel", up);
+stage.addEventListener("dblclick", e=>{ zoomAt(e.clientX,e.clientY, scale>1.5?0.001:2.2); });
+$("#fitBtn").addEventListener("click", setFit);
+let rt; window.addEventListener("resize", ()=>{ clearTimeout(rt); rt=setTimeout(setFit,120); });
+
+/* hide the gesture hint after a few seconds */
+setTimeout(()=>{ const h=$("#hint"); if(h) h.style.display="none"; }, 4000);
+
+/* boot */
+let start=0; try{ const s=+localStorage.getItem(STORE); if(s>=0 && s<MAPS.length) start=s; }catch{}
+const sm=MAPS[start];
+fillActs(sm.act); fillChaps(sm.act, sm.chapter); fillMaps(sm.act, sm.chapter, start);
+loadMap(start, true);
+</script>
+</body>
+</html>
