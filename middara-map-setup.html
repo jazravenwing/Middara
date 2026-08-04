@@ -100,11 +100,26 @@ const MAPS = [
   {
     act:"Act 1",
     chapter:"Chapter 1",
+    title:"The Mast: Day 1",
+    type:"Underground",
+    img:"TheMastDay1.png",
+    tiles:["UM1, UM9, UM11"],
+	terrain:["1 x Obstructing"],
+    totems:["1 x Blue","1 x Red"],
+    objectives:[],
+    loot:["1 x Blue"],
+	exits:["1 x Blue"],
+    figures:[],
+  },  
+  {
+    act:"Act 1",
+    chapter:"Chapter 1",
     title:"Loa Altar",
     type:"Wilderness",
     img:"LoaAltar.png",
     tiles:["UM31, UM33, UM35, UM37, UM39, UM43, UM45, UM51, UM53"],
-    totems:["1 x Blue","1 x Red"],
+    terrain:[],
+	totems:["1 x Blue","1 x Red"],
     objectives:["1 x Blue","1 x Red","1 x Green"],
     exits:[],
     loot:[],
@@ -117,7 +132,8 @@ const MAPS = [
     type:"Underground",
     img:"ExampleMap2.png",
     tiles:["UM44, UM46, UM48, UM50, UM66, UM72"],
-    totems:[],
+    terrain:[],
+	totems:[],
     objectives:["1 x Blue"],
     exits:["1 x Blue"],
     loot:["1 x Blue","1 x Random"],
@@ -127,7 +143,7 @@ const MAPS = [
 /* ▙▄▄▄▄▄▄▄▄▄▄▄▄▄  END OF YOUR DATA  ▄▄▄▄▄▄▄▄▄▄▄▄▄▟ */
 
 const FIELDS = [
-  {key:"tiles",name:"Tiles"}, {key:"totems",name:"Totems"}, {key:"objectives",name:"Objectives"},
+  {key:"tiles",name:"Tiles"}, {key:"terrain",name:"Terrain"}, {key:"totems",name:"Totems"}, {key:"objectives",name:"Objectives"},
   {key:"exits",name:"Exits"}, {key:"loot",name:"Loot"}, {key:"figures",name:"Figures"},
 ];
 const TYPES = {
