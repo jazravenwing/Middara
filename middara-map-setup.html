@@ -39,6 +39,8 @@ select,.btn{font-family:inherit;font-size:13px;background:var(--panel-2);color:v
 #mapImg{position:absolute;top:0;left:0;transform-origin:0 0;user-select:none;-webkit-user-drag:none;will-change:transform;}
 .stage .hint{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);font-size:11px;color:var(--ink-faint);
   background:rgba(20,16,25,.7);padding:4px 10px;border-radius:20px;pointer-events:none;letter-spacing:.04em;}
+.stage .prompt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;
+  color:var(--ink-faint);font-family:"Cinzel",serif;font-size:16px;letter-spacing:.08em;}
 
 /* setup popup */
 .scrim{position:fixed;inset:0;background:rgba(8,6,12,.68);display:none;align-items:center;justify-content:center;z-index:60;padding:16px;}
@@ -72,6 +74,7 @@ select,.btn{font-family:inherit;font-size:13px;background:var(--panel-2);color:v
 
 <div class="stage" id="stage">
   <img id="mapImg" alt="" draggable="false">
+  <div class="prompt" id="prompt">Select a map to begin</div>
   <div class="hint" id="hint">Pinch or scroll to zoom · drag to pan</div>
 </div>
 
@@ -94,7 +97,7 @@ select,.btn{font-family:inherit;font-size:13px;background:var(--panel-2);color:v
      img        – filename in your images/maps/ folder
                   (or a full https:// URL)
    Setup fields are arrays; each string is its own line:
-     tiles, totems, objectives, exits, loot, figures
+     tiles, terrain, totems, objectives, loot, special, figures
    ============================================================ */
 const IMG_BASE = "https://raw.githubusercontent.com/jazravenwing/Middara/main/images/maps/";
 
@@ -337,7 +340,7 @@ const MAPS = [
     objectives:[],
     loot:[],
 	exits:[],
-	special["4 x Eye of Magdalene"],
+	special:["4 x Eye of Magdalene"],
     figures:["1 x Melody, the Subjugated Oblation"],
   },
 ];
@@ -345,7 +348,7 @@ const MAPS = [
 
 const FIELDS = [
   {key:"tiles",name:"Tiles"}, {key:"terrain",name:"Terrain"}, {key:"totems",name:"Totems"}, {key:"objectives",name:"Objectives"},
-  {key:"exits",name:"Exits"}, {key:"loot",name:"Loot"}, {key:"special",name:"Special"}, {key:"figures",name:"Figures"},
+  {key:"exits",name:"Exits"}, {key:"loot",name:"Loot"}, {key:"figures",name:"Figures"},
 ];
 const TYPES = {
   wilderness:{color:"#5c8a3a", icon:'<svg viewBox="0 0 24 24"><path d="M12 2 L6 11 h3 l-4 7 h6 v3 h2 v-3 h6 l-4-7 h3 Z"/></svg>'},
@@ -368,7 +371,17 @@ function chaptersOf(act){ const c=[]; MAPS.forEach(m=>{ if(m.act===act && !c.inc
 function mapsOf(act,chap){ return MAPS.map((m,i)=>({m,i})).filter(x=>x.m.act===act && x.m.chapter===chap); }
 function fillActs(sel){ $("#actPick").innerHTML = acts().map(a=>`<option value="${esc(a)}" ${a===sel?"selected":""}>${esc(a)}</option>`).join(""); }
 function fillChaps(act,sel){ $("#chapPick").innerHTML = chaptersOf(act).map(c=>`<option value="${esc(c)}" ${c===sel?"selected":""}>${esc(c)}</option>`).join(""); }
-function fillMaps(act,chap,selIdx){ $("#mapPick").innerHTML = mapsOf(act,chap).map(x=>`<option value="${x.i}" ${x.i===selIdx?"selected":""}>${esc(x.m.title)}</option>`).join(""); }
+function fillMaps(act,chap,selIdx){
+  const opts = mapsOf(act,chap).map(x=>`<option value="${x.i}" ${x.i===selIdx?"selected":""}>${esc(x.m.title)}</option>`).join("");
+  $("#mapPick").innerHTML = `<option value="" ${selIdx==null?"selected":""}>— Select a map —</option>` + opts;
+}
+function clearStage(){
+  mapImg.removeAttribute("src"); mapImg.style.transform="none";
+  $("#typeBadge").style.display="none"; $("#lootBadge").style.display="none";
+  scrim.classList.remove("show");
+  const p=$("#prompt"); if(p) p.style.display="flex";
+  const h=$("#hint"); if(h) h.style.display="none";
+}
 function renderBadge(m){
   const t=TYPES[(m.type||"").toLowerCase()];
   const b=$("#typeBadge");
@@ -385,6 +398,8 @@ function renderSetup(m){
 }
 function loadMap(i, showPopup){
   idx=i; const m=MAPS[i];
+  const p=$("#prompt"); if(p) p.style.display="none";
+  const h=$("#hint"); if(h){ h.style.display="block"; clearTimeout(window._ht); window._ht=setTimeout(()=>{h.style.display="none";},4000); }
   try{ localStorage.setItem(STORE, String(i)); }catch{}
   renderBadge(m); renderSetup(m);
   mapImg.style.transform="none"; mapImg.removeAttribute("width");
@@ -395,14 +410,13 @@ function loadMap(i, showPopup){
   if(showPopup) scrim.classList.add("show");
 }
 $("#actPick").addEventListener("change", e=>{
-  const act=e.target.value, chaps=chaptersOf(act), first=mapsOf(act,chaps[0]);
-  fillChaps(act, chaps[0]); fillMaps(act, chaps[0], first[0].i); loadMap(first[0].i, true);
+  const act=e.target.value, chaps=chaptersOf(act);
+  fillChaps(act, chaps[0]); fillMaps(act, chaps[0], null); clearStage();
 });
 $("#chapPick").addEventListener("change", e=>{
-  const act=$("#actPick").value, first=mapsOf(act, e.target.value);
-  fillMaps(act, e.target.value, first[0].i); loadMap(first[0].i, true);
+  const act=$("#actPick").value; fillMaps(act, e.target.value, null); clearStage();
 });
-$("#mapPick").addEventListener("change", e=>loadMap(+e.target.value, true));
+$("#mapPick").addEventListener("change", e=>{ if(e.target.value==="") return; loadMap(+e.target.value, true); });
 $("#setupBtn").addEventListener("click", ()=>scrim.classList.add("show"));
 $("#okBtn").addEventListener("click", ()=>scrim.classList.remove("show"));
 scrim.addEventListener("click", e=>{ if(e.target===scrim) scrim.classList.remove("show"); });
@@ -453,10 +467,9 @@ let rt; window.addEventListener("resize", ()=>{ clearTimeout(rt); rt=setTimeout(
 setTimeout(()=>{ const h=$("#hint"); if(h) h.style.display="none"; }, 4000);
 
 /* boot */
-let start=0; try{ const s=+localStorage.getItem(STORE); if(s>=0 && s<MAPS.length) start=s; }catch{}
-const sm=MAPS[start];
-fillActs(sm.act); fillChaps(sm.act, sm.chapter); fillMaps(sm.act, sm.chapter, start);
-loadMap(start, true);
+const sm=MAPS[0];
+fillActs(sm.act); fillChaps(sm.act, sm.chapter); fillMaps(sm.act, sm.chapter, null);
+clearStage();
 </script>
 </body>
 </html>
