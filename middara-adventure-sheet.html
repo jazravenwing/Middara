@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Middara Adventure Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#141019; --bg-2:#1c1622; --panel:#231b2b; --panel-2:#2b2130;
+  --edge:#3a2f42; --ink:#f3ecdf; --ink-dim:#a79bb0; --ink-faint:#6f6377;
+  --brass:#cba24b; --brass-dim:#8f7534; --red:#d84a4a; --shadow:0 5px 14px rgba(0,0,0,.4); --r:11px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;}
+body{background:radial-gradient(1000px 600px at 50% -10%, #2a1f36 0%, rgba(42,31,54,0) 60%),var(--bg);
+  color:var(--ink);font-family:"Oswald","Segoe UI",system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;}
+.wrap{max-width:1000px;margin:0 auto;padding:10px 10px 28px;}
+.head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px;}
+.head h1{font-family:"Cinzel",serif;font-size:15px;letter-spacing:.1em;color:var(--brass);margin:0;text-transform:uppercase;}
+.act-sub{font-family:"Cinzel",serif;font-size:clamp(13px,3vw,17px);color:var(--ink-dim);letter-spacing:.04em;}
+.card{background:linear-gradient(180deg,var(--panel),var(--bg-2));border:1px solid var(--edge);border-radius:var(--r);box-shadow:var(--shadow);padding:8px 10px;margin-top:8px;}
+.card > h2{font-family:"Cinzel",serif;font-weight:500;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--brass);margin:0 0 7px;}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start;}
+.col{display:flex;flex-direction:column;}
+.col .card:first-child{margin-top:0;}
+@media (max-width:720px){ .cols{grid-template-columns:1fr;} }
+input,textarea,.btn{font-family:inherit;color:var(--ink);}
+.btn{font-size:12px;background:var(--panel-2);border:1px solid var(--edge);border-radius:8px;padding:5px 10px;min-height:30px;cursor:pointer;}
+.btn.primary{background:linear-gradient(180deg,#d9b358,#b98f30);color:#231a08;border-color:var(--brass);font-weight:600;}
+.btn[disabled]{opacity:.4;cursor:not-allowed;}
+.in{background:#181320;border:1px solid var(--edge);border-radius:7px;padding:5px 8px;font-size:13px;}
+.in:focus{outline:none;border-color:var(--brass);}
+/* info row */
+.inforow{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-start;}
+.goldctrl{display:flex;gap:5px;align-items:center;}
+.gnum{width:74px;font-weight:700;font-size:18px;font-variant-numeric:tabular-nums;background:#181320;border:1px solid var(--edge);border-radius:8px;padding:3px 7px;}
+.gadj{width:56px;}
+.apply{padding:5px 9px;min-height:32px;}
+.mini{display:flex;flex-direction:column;gap:3px;}
+.mini label{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim);}
+.mini input{width:74px;}
+/* party */
+.prow{display:flex;flex-wrap:nowrap;align-items:center;gap:5px 7px;padding:5px 7px;border:1px solid var(--edge);border-radius:9px;background:var(--panel-2);margin-bottom:6px;}
+.p-name{flex:1 1 60px;min-width:0;font-weight:600;}
+.pfield{flex:0 0 auto;display:flex;align-items:center;gap:4px;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);}
+.pfield input{width:52px;text-align:center;font-variant-numeric:tabular-nums;-moz-appearance:textfield;padding-left:4px;padding-right:4px;}
+.pfield input::-webkit-outer-spin-button,.pfield input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+.pchk{flex:0 0 auto;white-space:nowrap;display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--ink-dim);background:transparent;border:none;cursor:pointer;padding:2px 3px;}
+.pchk .box,.chk .box{width:15px;height:15px;border:2px solid var(--edge);border-radius:4px;flex:0 0 auto;position:relative;background:#181320;}
+.pchk.on,.chk.on .lbl{color:var(--ink);}
+.pchk.on .box,.chk.on .box{background:var(--brass);border-color:var(--brass);}
+.pchk.on .box::after,.chk.on .box::after{content:"";position:absolute;left:3px;top:0;width:5px;height:9px;border:solid #231a08;border-width:0 2px 2px 0;transform:rotate(45deg);}
+.premove,.premove-blank{flex:0 0 auto;width:24px;height:24px;}
+.premove{border-radius:7px;border:none;background:transparent;color:var(--ink-faint);font-size:15px;cursor:pointer;}
+.premove:hover{background:rgba(226,59,59,.2);color:#ff9a9a;}
+.addrow{margin-top:2px;}
+/* checklists */
+.checklist{columns:2;column-gap:16px;}
+.chk,.chk-wrap{break-inside:avoid;-webkit-column-break-inside:avoid;}
+.chk-wrap{display:flex;align-items:center;gap:6px;padding:3px 0;}
+.chk-wrap .chk{padding:0;flex:0 0 auto;}
+.flag-extra{flex:1;min-width:0;background:#181320;border:1px solid var(--edge);border-radius:6px;padding:2px 6px;font-size:12px;color:var(--ink);}
+.flag-extra:focus{outline:none;border-color:var(--brass);}
+.chk{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink-dim);cursor:pointer;padding:3px 0;user-select:none;}
+.chk .lbl{line-height:1.15;}
+/* notes */
+#notes{width:100%;background:#181320;border:1px solid var(--edge);border-radius:8px;padding:7px 9px;font-size:13px;color:var(--ink);resize:vertical;min-height:64px;line-height:1.35;}
+#notes:focus{outline:none;border-color:var(--brass);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <h1>Adventure Sheet</h1>
+    <span class="act-sub">Unintentional Maluma: Act 1</span>
+  </div>
+
+  <div class="cols">
+    <div class="col">
+      <div class="card"><h2>Flags</h2><div class="checklist" id="flags"></div></div>
+      <div class="card"><h2>Achievements</h2><div class="checklist" id="achievements"></div></div>
+      <div class="card"><h2>Unlocked Item Upgrades</h2><div class="checklist" id="upgrades"></div></div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <div class="inforow">
+          <div class="mini">
+            <label>Gold</label>
+            <div class="goldctrl">
+              <input class="gnum" type="number" min="0" data-g="gold" inputmode="numeric">
+              <input class="in gadj" id="goldAdj" type="number" inputmode="numeric" placeholder="+/-">
+              <button class="btn primary apply" id="goldApply">Apply</button>
+            </div>
+          </div>
+          <div class="mini"><label>Page #</label><input class="in" data-g="page" autocomplete="off"></div>
+          <div class="mini"><label>Max XP</label><input class="in" type="number" min="0" data-g="maxXp" inputmode="numeric"></div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Party</h2>
+        <div id="party"></div>
+        <div class="addrow"><button class="btn" id="addMember">+ Add character</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card"><h2>Notes</h2><textarea id="notes" rows="3" placeholder="&mdash;"></textarea></div>
+</div>
+
+<script>
+/* ============================================================
+   ▛▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  YOUR DATA  ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▜
+   These are the checklist labels. Edit / reorder freely.
+   Item Upgrades has 15 slots: Master Work + Imbued are set,
+   rename "Upgrade 3..15" to the real ones as you go.
+   (Checks are stored by position, so name them before real play.)
+   ============================================================ */
+const FLAGS = [
+  "Bouncer Bounced","Culprit Identified","Slipping ___","Contract Terminated","Prized Possession",
+  "Leg Wound","Soul Judgment","Familial Dispute","Experienced Guide","A Lonely Survivor",
+  "Marked","Happy Fugitives","Heartbroken Exile","Judgement of Judas","The Patel Daughter",
+  "Elias' Gratitude","An End to Madness","New Ambitions","Avoiding Collapse","A Husband's Duty",
+  "A Son's Love","Key Defeat","Rested","Book of Gehenna","Fallen Friend","Last of Her Coterie",
+  "Seeds of Her People","Grievous Wounds","The Only Way","Irreconcilable Differences",
+  "Reluctant Partnership","Massacred","Coffin Buddy","Capable Enough","Good Riddance",
+  "Time is of the Essence ___","All we can get","Butchered","Sacrifice","A Helping Hand",
+  "A New Owner","A Greater Cause","Imprisoned Anointed"
+];
+const ACHIEVEMENTS = [
+  "Not Quite Unkillable","Death from Above","Proof of Prowess","Like a Blur","Supreme Mobility",
+  "Sickle Slaughter","Raining Loot","Healthy, Wealthy, and Wise","Success Breeds Success",
+  "Zap a Gap","Poppet be Gone","Tough Wurm","Tentacle Collector","Tortured Mortal"
+];
+const UPGRADES = [
+  "Master Work","Imbued","Devastating","Otherworldly","Reinforced","Bulky","Elegant","Refined",
+  "Etherium","Sentient","Scrying","Dark","Glowing","Shimmering","Enchanted"
+];
+/* ▙▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄  END OF YOUR DATA  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▟ */
+
+const STORE = "middara.adventure.v1";
+const $ = s => document.querySelector(s);
+function m(){ return {name:"",xp:0,dmg:0,injured:false,unselectable:false}; }
+function blank(){ return {act:"Unintentional Maluma: Act 1", gold:0, page:"", maxXp:0,
+  party:[m(),m(),m(),m()], flags:{}, achievements:{}, upgrades:{}, flagText:{}, notes:""}; }
+let state = blank();
+
+function save(){ localStorage.setItem(STORE, JSON.stringify(state)); }
+function load(){ try{ return JSON.parse(localStorage.getItem(STORE)); }catch{ return null; } }
+function esc(s){ return String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function autogrow(t){ t.style.height="auto"; t.style.height=(t.scrollHeight+2)+"px"; }
+
+function renderParty(){
+  $("#party").innerHTML = state.party.map((c,i)=>`
+    <div class="prow">
+      <input class="in p-name" data-p="name" data-i="${i}" placeholder="Name" value="${esc(c.name)}" autocomplete="off">
+      <span class="pfield">XP<input class="in" type="number" min="0" inputmode="numeric" data-p="xp" data-i="${i}" value="${c.xp}"></span>
+      <span class="pfield">DMG<input class="in" type="number" min="0" inputmode="numeric" data-p="dmg" data-i="${i}" value="${c.dmg}"></span>
+      <button class="pchk ${c.injured?"on":""}" data-pcheck="injured" data-i="${i}"><span class="box"></span>Injured</button>
+      <button class="pchk ${c.unselectable?"on":""}" data-pcheck="unselectable" data-i="${i}"><span class="box"></span>Unselectable</button>
+      ${i>=4?`<button class="premove" data-premove="${i}" title="Remove">&times;</button>`:`<span class="premove-blank"></span>`}
+    </div>`).join("");
+  $("#addMember").disabled = state.party.length>=12;
+}
+function checklist(id, items, section){
+  $(id).innerHTML = items.map((label,i)=>{
+    const on = state[section][i] ? "on" : "";
+    const clean = label.replace(/_{2,}/g,"").trim();
+    const box = `<label class="chk ${on}" data-check="${section}" data-i="${i}"><span class="box"></span><span class="lbl">${esc(clean)}</span></label>`;
+    if(!/_{2,}/.test(label)) return box;
+    const key = section+":"+i;
+    const val = esc((state.flagText||{})[key]||"");
+    return `<div class="chk-wrap">${box}<input class="flag-extra" data-flagtext="${key}" maxlength="20" value="${val}" autocomplete="off" placeholder="…"></div>`;
+  }).join("");
+}
+function render(){
+  $(".gnum").value = state.gold;
+  $("[data-g='page']").value = state.page;
+  $("[data-g='maxXp']").value = state.maxXp;
+  $("#notes").value = state.notes; autogrow($("#notes"));
+  renderParty();
+  checklist("#flags", FLAGS, "flags");
+  checklist("#achievements", ACHIEVEMENTS, "achievements");
+  checklist("#upgrades", UPGRADES, "upgrades");
+}
+
+/* text/number inputs -> update state, no re-render (keeps focus) */
+document.addEventListener("input", e=>{
+  const t=e.target;
+  if(t.id==="notes"){ state.notes=t.value; autogrow(t); save(); return; }
+  if(t.matches("[data-flagtext]")){ state.flagText[t.dataset.flagtext]=t.value; save(); return; }
+  if(t.matches("[data-g]")){
+    const g=t.dataset.g;
+    if(g==="page") state.page=t.value;
+    else if(g==="gold") state.gold=Math.max(0,Math.floor(Number(t.value))||0);
+    else if(g==="maxXp") state.maxXp=Math.max(0,Math.floor(Number(t.value))||0);
+    save(); return;
+  }
+  if(t.matches("[data-p]")){
+    const i=+t.dataset.i, f=t.dataset.p;
+    if(f==="name") state.party[i].name=t.value;
+    else state.party[i][f]=Math.max(0,Math.floor(Number(t.value))||0);
+    save(); return;
+  }
+});
+
+/* clicks: checklist toggles, party toggles/remove, add, gold apply */
+document.addEventListener("click", e=>{
+  const chk=e.target.closest("[data-check]");
+  if(chk){ const s=chk.dataset.check, i=+chk.dataset.i;
+    if(state[s][i]) delete state[s][i]; else state[s][i]=true;
+    chk.classList.toggle("on"); save(); return; }
+  const pc=e.target.closest("[data-pcheck]");
+  if(pc){ const i=+pc.dataset.i, f=pc.dataset.pcheck;
+    state.party[i][f]=!state.party[i][f]; pc.classList.toggle("on"); save(); return; }
+  const pr=e.target.closest("[data-premove]");
+  if(pr){ const i=+pr.dataset.premove; if(i<4) return; state.party.splice(i,1); save(); renderParty(); return; }
+  if(e.target.id==="addMember"){
+    if(state.party.length>=12) return;
+    const nm=m(); if(state.party.length>=4) nm.xp=Number(state.maxXp)||0;
+    state.party.push(nm); save(); renderParty(); return;
+  }
+  if(e.target.id==="goldApply"){
+    const adj=Math.floor(Number($("#goldAdj").value))||0;
+    state.gold=Math.max(0,(Number(state.gold)||0)+adj);
+    $(".gnum").value=state.gold; $("#goldAdj").value=""; save(); return;
+  }
+});
+
+/* boot */
+const saved=load();
+if(saved && saved.party){
+  state=Object.assign(blank(), saved);
+  state.flags=saved.flags||{}; state.achievements=saved.achievements||{}; state.upgrades=saved.upgrades||{}; state.flagText=saved.flagText||{};
+}
+render();
+</script>
+</body>
+</html>
