@@ -334,7 +334,7 @@ const COLORS = [
   { name:"Gold", hex:"#c79433" },
 ];
 
-const CARD_SET = ["Mundane", "Common", "Uncommon", "Rare", "Hidden", "Espers","BE1","BE4","Var/Alts"];
+const CARD_SET = ["Mundane", "Common", "Uncommon", "Rare", "Hidden", "Espers","BE1","BE2","BE4","Var/Alts"];
 const IMG_BASE = "https://raw.githubusercontent.com/jazravenwing/Middara/main/images/";
 
 const MONSTERS = [
@@ -407,6 +407,7 @@ const MONSTERS = [
 	{ name:"UM54a", set:"Hidden", img:"UM54SivaniGuardianHidden.png", hp:50,  colors:1 },
 	{ name:"UM54b", set:"Hidden", img:"UM54SivaniGuardian2Hidden.png", hp:50,  colors:["Teal"] },
 	{ name:"UM54S", set:"Hidden", img:"UM54SubjugatedOblationHidden.png", hp:200,  colors:1 },
+	{ name:"PB14", set:"Hidden", img:"PB14PitBossHidden.png", hp:300,  colors:1 },
 	
 //Espers
 	{ name:"Celestial Giga", set:"Espers", img:"CelestialGigaAny.png", hp:99,  colors:1 },
@@ -422,11 +423,36 @@ const MONSTERS = [
 	{ name:"Psionic Sickling", set:"BE1", img:"PsionicSicklingBE1.png", dir:"BE1", hp:9,  colors:6 },
 	{ name:"Cersei", set:"BE1", img:"CerseiBE1.png", dir:"BE1", hp:80, colors:1 },
 	{ name:"Khala", set:"BE1", img:"KhalaBE1.png", dir:"BE1", hp:80,  colors:1 },
+//BE2
+	{ name:"Adlet Drudge(UC)", set:"BE2", img:"AdletDrudgeUCBE2.png", dir:"BE2", hp:18,  colors:6 },
+	{ name:"Adlet Drudge(R)", set:"BE2", img:"AdletDrudgeRBE2.png", dir:"BE2", hp:24,  colors:6 },
+	{ name:"Adlet Drudge(E)", set:"BE2", img:"AdletDrudgeEBE2.png", dir:"BE2", hp:30,  colors:6 },
+	{ name:"Eizzof: The Lure Bear", set:"BE2", img:"EizzofBE2.png", dir:"BE2", hp:100,  colors:1 },
+	{ name:"Eizzof: Unbound Lure Bear", set:"BE2", img:"EizzofUnboundBE2.png", dir:"BE2", hp:150,  colors:1 },
+	{ name:"Lure Bear(UC)", set:"BE2", img:"LBMimicUCBE2.png", dir:"BE2", hp:60,  colors:1 },
+	{ name:"Lure Bear(R)", set:"BE2", img:"LBMimicRBE2.png", dir:"BE2", hp:80,  colors:1 },
+	{ name:"Lure Bear(E)", set:"BE2", img:"LBMimicEBE2.png", dir:"BE2", hp:100,  colors:1 },
+	{ name:"Ozzir", set:"BE2", img:"OzzirBE2.png", dir:"BE2", hp:1,  colors:1 },
+	{ name:"Whimsie(UC)", set:"BE2", img:"WhimsieUCBE2.png", dir:"BE2", hp:1,  colors:1 },
+	{ name:"Whimsie(R)", set:"BE2", img:"WhimsieRBE2.png", dir:"BE2", hp:1,  colors:1 },
+	{ name:"Whimsie(E)", set:"BE2", img:"WhimsieEBE2.png", dir:"BE2", hp:1,  colors:1 },
 
 //BE4
 	{ name:"False Nymph", set:"BE4", img:"FalseNymphBE4.png", dir:"BE4", hp:60,  colors:1 },
 
 //Var/Alts
+	{ name:"Adlet Drudge:Adlet Overseer(UC)", set:"Var/Alts", img:"ADAdletOverseerUC-Variation.png", dir:"Var-Alts", hp:35,  colors:2 },
+	{ name:"Adlet Drudge:Adlet Overseer(R)", set:"Var/Alts", img:"ADAdletOverseerR-Variation.png", dir:"Var-Alts", hp:50,  colors:2 },
+	{ name:"Adlet Drudge:Adlet Overseer(E)", set:"Var/Alts", img:"ADAdletOverseerE-Variation.png", dir:"Var-Alts", hp:65,  colors:2 },
+	{ name:"Adlet Drudge:Adlet Priest(UC)", set:"Var/Alts", img:"ADAdletPriestUC-Variation.png", dir:"Var-Alts", hp:18,  colors:4 },
+	{ name:"Adlet Drudge:Adlet Priest(R)", set:"Var/Alts", img:"ADAdletPriestR-Variation.png", dir:"Var-Alts", hp:24,  colors:4 },
+	{ name:"Adlet Drudge:Adlet Priest(E)", set:"Var/Alts", img:"ADAdletPriestE-Variation.png", dir:"Var-Alts", hp:30,  colors:4 },
+	{ name:"Adlet Drudge/Priest:Combustion Sage(UC)", set:"Var/Alts", img:"ADAPCombustionSageUC-Variation.png", dir:"Var-Alts", hp:18,  colors:4 },
+	{ name:"Adlet Drudge/Priest:Combustion Sage(R)", set:"Var/Alts", img:"ADAPCombustionSageR-Variation.png", dir:"Var-Alts", hp:24,  colors:4 },
+	{ name:"Adlet Drudge/Priest:Combustion Sage(E)", set:"Var/Alts", img:"ADAPCombustionSageE-Variation.png", dir:"Var-Alts", hp:30,  colors:4 },
+	{ name:"Adlet Drudge:Abyssal Adlet(UC)", set:"Var/Alts", img:"ADPitBossUC-Variation.png", dir:"Var-Alts", hp:60,  colors:1 },
+	{ name:"Adlet Drudge:Abyssal Adlet(R)", set:"Var/Alts", img:"ADPitBossR-Variation.png", dir:"Var-Alts", hp:80,  colors:1 },
+//	{ name:"Adlet Drudge:Abyssal Adlet(E)", set:"Var/Alts", img:"ADPitBossE-Variation.png", dir:"Var-Alts", hp:80,  colors:1 },
 	{ name:"Animate:Alchemical Variation(M)", set:"Var/Alts", img:"AAlchemicalM-Variation.png", dir:"Var-Alts", hp:18,  colors:4 },
 	{ name:"Animate:Alchemical Variation(UC)", set:"Var/Alts", img:"AAlchemicalUC-Variation.png", dir:"Var-Alts", hp:30,  colors:4 },
 	{ name:"Animate:Alchemical Variation(E)", set:"Var/Alts", img:"AAlchemicalE-Variation.png", dir:"Var-Alts", hp:42,  colors:4 },
@@ -444,6 +470,9 @@ const MONSTERS = [
 	{ name:"Cave Sickle:Hive Guardian(M)", set:"Var/Alts", img:"CSHiveGuardianM-Variation.png", dir:"Var-Alts", hp:6,  colors:6 },
 	{ name:"Cave Sickle:Hive Guardian(C)", set:"Var/Alts", img:"CSHiveGuardianC-Variation.png", dir:"Var-Alts", hp:12,  colors:6 },
 	{ name:"Cave Sickle:Hive Guardian(UC)", set:"Var/Alts", img:"CSHiveGuardianUC-Variation.png", dir:"Var-Alts", hp:16,  colors:6 },
+	{ name:"Cave Sickle:Itlum Infused(M)", set:"Var/Alts", img:"CSItlumInfusedM-Variation.png", dir:"Var-Alts", hp:6,  colors:6 },
+	{ name:"Cave Sickle:Itlum Infused(C)", set:"Var/Alts", img:"CSItlumInfusedC-Variation.png", dir:"Var-Alts", hp:12,  colors:6 },
+	{ name:"Cave Sickle:Itlum Infused(UC)", set:"Var/Alts", img:"CSItlumInfusedUC-Variation.png", dir:"Var-Alts", hp:16,  colors:6 },
 	{ name:"Cave Sickle:Warrior(M)", set:"Var/Alts", img:"CSWarriorM-Variation.png", hp:10, dir:"Var-Alts",  colors:2 },
 	{ name:"Cave Sickle:Warrior(C)", set:"Var/Alts", img:"CSWarriorC-Variation.png", hp:22, dir:"Var-Alts",  colors:2 },
 	{ name:"Cave Sickle:Warrior(UC)", set:"Var/Alts", img:"CSWarriorUC-Variation.png", dir:"Var-Alts", hp:30,  colors:2 },
@@ -453,6 +482,10 @@ const MONSTERS = [
 	{ name:"Corpse Collector:Ravenous Appetite(UC)", set:"Var/Alts", img:"CCRavenousAppetiteUC-Variation.png", dir:"Var-Alts", hp:50,  colors:1 },
 	{ name:"Corpse Collector:Ravenous Appetite(R)", set:"Var/Alts", img:"CCRavenousAppetiteR-Variation.png", dir:"Var-Alts", hp:100,  colors:1 },
 	{ name:"Corpse Collector:Ravenous Appetite(E)", set:"Var/Alts", img:"CCRavenousAppetiteE-Variation.png", dir:"Var-Alts", hp:120,  colors:1 },
+	{ name:"Earth Loa:Itlum Rich(M)", set:"Var/Alts", img:"ELItlumRichM-Variation.png", dir:"Var-Alts", hp:20,  colors:2 },
+	{ name:"Earth Loa:Itlum Rich(C)", set:"Var/Alts", img:"ELItlumRichC-Variation.png", dir:"Var-Alts", hp:30,  colors:2 },
+	{ name:"Earth Loa:Itlum Rich(UC)", set:"Var/Alts", img:"ELItlumRichUC-Variation.png", dir:"Var-Alts", hp:36,  colors:2 },
+	{ name:"Earth Loa:Itlum Rich(L)", set:"Var/Alts", img:"ELItlumRichL-Variation.png", dir:"Var-Alts", hp:80,  colors:2 },
 	{ name:"Earth Loa:Territorial Truffula(M)", set:"Var/Alts", img:"ELTerritorialTruffulaM-Variation.png", dir:"Var-Alts", hp:20,  colors:2 },
 	{ name:"Earth Loa:Territorial Truffula(C)", set:"Var/Alts", img:"ELTerritorialTruffulaC-Variation.png", dir:"Var-Alts", hp:30,  colors:2 },
 	{ name:"Earth Loa:Territorial Truffula(UC)", set:"Var/Alts", img:"ELTerritorialTruffulaUC-Variation.png", dir:"Var-Alts", hp:36,  colors:2 },
