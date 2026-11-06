@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Abraxis Battle Dice Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#141019; --panel:#231b2b; --panel-2:#2b2130; --edge:#3a2f42;
+  --ink:#f3ecdf; --ink-dim:#a79bb0; --ink-faint:#6f6377; --brass:#cba24b; --brass-dim:#8f7534;
+  --shadow:0 6px 18px rgba(0,0,0,.5); --r:12px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;}
+body{background:radial-gradient(1000px 600px at 50% -10%, #2a1f36 0%, rgba(42,31,54,0) 60%),var(--bg);
+  color:var(--ink);font-family:"Oswald","Segoe UI",system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;}
+.wrap{max-width:1000px;margin:0 auto;padding:8px 12px 30px;}
+
+/* top bar */
+.topbar{display:flex;align-items:center;gap:8px;padding:6px 2px;}
+.topbar h1{font-family:"Cinzel",serif;font-size:13px;letter-spacing:.1em;color:var(--brass);text-transform:uppercase;margin:0;white-space:nowrap;}
+.topbar select{flex:1;min-width:0;max-width:340px;}
+.spacer{flex:1;}
+select,.btn{font-family:inherit;font-size:15px;background:var(--panel-2);color:var(--ink);border:1px solid var(--edge);
+  border-radius:9px;padding:7px 11px;min-height:40px;cursor:pointer;}
+.btn{font-weight:600;letter-spacing:.03em;white-space:nowrap;}
+.btn:active{transform:translateY(1px);}
+.btn.ghost{background:transparent;color:var(--ink-dim);}
+
+/* rounds */
+.rounds{display:flex;align-items:center;gap:8px;margin:6px 0 10px;}
+.rounds .lbl{font-family:"Cinzel",serif;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-dim);margin-right:2px;}
+.rbtn{flex:1;max-width:84px;min-height:48px;border-radius:11px;border:2px solid var(--edge);background:var(--panel);
+  color:var(--ink-faint);font-family:inherit;font-weight:700;font-size:22px;cursor:pointer;}
+.rbtn.past{background:var(--panel-2);color:var(--ink-dim);border-color:var(--brass-dim);}
+.rbtn.now{background:linear-gradient(180deg,#d9b358,#b98f30);color:#231a08;border-color:var(--brass);}
+
+/* body: art + counters */
+.main{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:12px;align-items:start;}
+@media (max-width:760px){ .main{grid-template-columns:1fr;} }
+.art{position:relative;width:100%;aspect-ratio:4/3;max-height:52vh;border-radius:14px;overflow:hidden;
+  border:1px solid var(--edge);box-shadow:var(--shadow);background:#0d0a12;}
+.art img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;}
+.art .ph{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:16px;
+  background:repeating-linear-gradient(135deg,rgba(203,162,75,.05) 0 12px,transparent 12px 24px),linear-gradient(180deg,#241b2d,#191320);}
+.art .ph .g{font-family:"Cinzel",serif;font-size:44px;color:var(--brass);opacity:.5;line-height:1;}
+.art .ph .n{font-family:"Cinzel",serif;font-size:20px;letter-spacing:.04em;}
+.art .ph .h{font-size:12px;color:var(--ink-faint);letter-spacing:.12em;text-transform:uppercase;}
+
+.counters{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.sym{background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1px solid var(--edge);border-radius:14px;
+  padding:10px 6px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;box-shadow:var(--shadow);transition:opacity .15s;}
+.sym.zero{opacity:.42;}
+.sym .ic{width:clamp(44px,12vw,64px);height:clamp(44px,12vw,64px);color:var(--ink);}
+.sym .ic svg{width:100%;height:100%;fill:currentColor;}
+.sym.burst .ic{color:var(--brass);}
+.sym .nm{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-dim);}
+.sym .num{font-weight:700;font-size:clamp(46px,13vw,72px);line-height:1;font-variant-numeric:tabular-nums;color:var(--ink);}
+.sym .steps{display:flex;gap:6px;width:100%;margin-top:2px;}
+.step{flex:1;min-height:46px;border-radius:10px;border:1px solid var(--edge);background:var(--panel-2);color:var(--ink);
+  font-size:26px;font-weight:600;line-height:1;cursor:pointer;}
+.step:active{transform:translateY(1px);}
+.step.minus{border-color:rgba(216,74,74,.5);}
+.step.plus{border-color:rgba(120,200,120,.4);}
+
+/* dialog */
+.scrim{position:fixed;inset:0;background:rgba(8,6,12,.7);display:none;align-items:center;justify-content:center;z-index:100;padding:20px;}
+.scrim.show{display:flex;}
+.dialog{background:var(--panel);border:1px solid var(--brass-dim);border-radius:var(--r);padding:20px;max-width:360px;box-shadow:var(--shadow);}
+.dialog h3{font-family:"Cinzel",serif;margin:0 0 8px;font-size:18px;}
+.dialog p{margin:0 0 14px;color:var(--ink-dim);font-size:14px;}
+.dialog .row{display:flex;gap:10px;justify-content:flex-end;}
+.btn.dgo{background:linear-gradient(180deg,#c9433f,#a3302d);border-color:#c9433f;color:#fff;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <h1>Abraxis</h1>
+    <select id="pick" title="Choose card"></select>
+    <span class="spacer"></span>
+    <button class="btn ghost" id="reset">New Battle</button>
+  </div>
+
+  <div class="rounds" id="rounds"></div>
+
+  <div class="main">
+    <div class="art" id="art"></div>
+    <div class="counters" id="counters"></div>
+  </div>
+</div>
+
+<div class="scrim" id="scrim">
+  <div class="dialog">
+    <h3>New battle?</h3>
+    <p id="dBody"></p>
+    <div class="row">
+      <button class="btn ghost" id="dNo">Cancel</button>
+      <button class="btn dgo" id="dYes">Reset</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   ▛▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  YOUR DATA  ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▜
+   One entry per Abraxis card.
+     name   – card name (shown in the dropdown). Saved progress is
+              kept by name, so rename a card only between battles.
+     img    – filename of the card art. Leave "" to show the
+              placeholder (it also shows if the image can't load).
+     dir    – optional subfolder under images/ (e.g. dir:"Abraxis")
+     book / shield / burst – the card's STARTING symbols to match
+   Template for the next card (copy, remove the // , fill in):
+   // { name:"", img:"", book:0, shield:0, burst:0 },
+   ============================================================ */
+const IMG_BASE = "https://raw.githubusercontent.com/jazravenwing/Middara/main/images/";
+
+const CARDS = [
+  { name:"Pirate Wench", img:"AbraxisPirateWench", book:2, shield:2, burst:0 },
+  { name:"Pit Boss", img:"AbraxisPitBoss", book:3, shield:3, burst:0 },
+  { name:"Three Witches", img:"AbraxisThreeWitches", book:3, shield:0, burst:0 },
+  { name:"Memnoch The Flying Fortress", img:"AbraxisMemnoch", burts: 0, book:2, shield:2 },
+];
+/* ▙▄▄▄▄▄▄▄▄▄▄▄▄▄  END OF YOUR DATA  ▄▄▄▄▄▄▄▄▄▄▄▄▄▟ */
+
+const ROUNDS = 5;
+const SYMS = [ {key:"book",name:"Book"}, {key:"shield",name:"Shield"}, {key:"burst",name:"Burst"} ];
+const SVG = {
+  shield:'<svg viewBox="0 0 24 24"><path d="M12 2 L21 5 V11 C21 17 12 22 12 22 C12 22 3 17 3 11 V5 Z"/></svg>',
+  book:'<svg viewBox="0 0 24 24"><path d="M4 4.5C7 3.5 10 3.5 12 5c2-1.5 5-1.5 8-.5V19c-3-1-6-1-8 .6-2-1.6-5-1.6-8-.6Z"/></svg>',
+  burst:'<svg viewBox="0 0 24 24"><path d="M12 1 L14 9 L22 7 L16 12 L22 17 L14 15 L12 23 L10 15 L2 17 L8 12 L2 7 L10 9 Z"/></svg>',
+};
+
+const STORE = "middara.abraxis.v1";
+const $ = s => document.querySelector(s);
+const esc = s => String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+let store = (()=>{ try{ const s=JSON.parse(localStorage.getItem(STORE)); if(s&&s.cards) return s; }catch{} return {last:null,cards:{}}; })();
+let cur = Math.max(0, CARDS.findIndex(c=>c.name===store.last));
+
+function save(){ try{ localStorage.setItem(STORE, JSON.stringify(store)); }catch{} }
+function startState(c){ return {book:c.book||0, shield:c.shield||0, burst:c.burst||0, round:1}; }
+function st(c){ if(!store.cards[c.name]) store.cards[c.name]=startState(c); return store.cards[c.name]; }
+function artSrc(c){ if(!c.img) return ""; return /^https?:\/\//.test(c.img) ? c.img : IMG_BASE + (c.dir ? c.dir+"/" : "") + c.img; }
+
+function render(){
+  const c=CARDS[cur], s=st(c);
+  $("#pick").innerHTML = CARDS.map((x,i)=>`<option value="${i}" ${i===cur?"selected":""}>${esc(x.name)}</option>`).join("");
+
+  $("#rounds").innerHTML = `<span class="lbl">Round</span>` + Array.from({length:ROUNDS},(_,i)=>{
+    const n=i+1, cls = n===s.round ? "now" : (n<s.round ? "past" : "");
+    return `<button class="rbtn ${cls}" data-round="${n}">${n}</button>`;
+  }).join("");
+
+  const src=artSrc(c);
+  $("#art").innerHTML =
+    (src ? `<img alt="${esc(c.name)}" src="${esc(src)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">` : "")
+    + `<div class="ph" style="display:${src?"none":"flex"}"><div class="g">✦</div><div class="n">${esc(c.name)}</div><div class="h">Art placeholder</div></div>`;
+
+  $("#counters").innerHTML = SYMS.map(y=>`
+    <div class="sym ${y.key} ${s[y.key]===0?"zero":""}">
+      <div class="ic">${SVG[y.key]}</div>
+      <div class="nm">${y.name}</div>
+      <div class="num">${s[y.key]}</div>
+      <div class="steps">
+        <button class="step minus" data-sym="${y.key}" data-d="-1">&ndash;</button>
+        <button class="step plus" data-sym="${y.key}" data-d="1">+</button>
+      </div>
+    </div>`).join("");
+}
+
+$("#counters").addEventListener("click", e=>{
+  const b=e.target.closest("[data-sym]"); if(!b) return;
+  const s=st(CARDS[cur]); const k=b.dataset.sym;
+  s[k]=Math.max(0, s[k] + (+b.dataset.d)); save(); render();
+});
+$("#rounds").addEventListener("click", e=>{
+  const b=e.target.closest("[data-round]"); if(!b) return;
+  st(CARDS[cur]).round=+b.dataset.round; save(); render();
+});
+$("#pick").addEventListener("change", e=>{
+  cur=+e.target.value; store.last=CARDS[cur].name; save(); render();
+});
+
+const scrim=$("#scrim");
+$("#reset").addEventListener("click", ()=>{
+  $("#dBody").textContent = `${CARDS[cur].name} goes back to its starting symbols and Round 1.`;
+  scrim.classList.add("show");
+});
+$("#dNo").addEventListener("click", ()=>scrim.classList.remove("show"));
+scrim.addEventListener("click", e=>{ if(e.target===scrim) scrim.classList.remove("show"); });
+$("#dYes").addEventListener("click", ()=>{
+  store.cards[CARDS[cur].name]=startState(CARDS[cur]); save(); scrim.classList.remove("show"); render();
+});
+
+render();
+</script>
+</body>
+</html>
